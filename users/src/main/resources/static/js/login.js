@@ -7,9 +7,7 @@ async function logInUser() {
     };
     datos.email = document.getElementById('inputEmail').value;
     datos.password = document.getElementById('inputPassword').value;
-
-   
-  const response = await fetch('/api/app/login', { //marca el método que llama en el controlador AuthController
+    const response = await fetch('/api/app/login', { //marca el método que llama en el controlador AuthController
                                                   //este le devuelve el JWToken, necesita el await para esperar la respuesta
                                                   // que viene en HTTP
     method: 'POST', //usamos POST porque va a crear datos
@@ -18,6 +16,7 @@ async function logInUser() {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(datos)
+    
   });
   const token = await response.text(); // necesita el await para leer el body como un texto
   

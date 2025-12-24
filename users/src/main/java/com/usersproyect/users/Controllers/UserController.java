@@ -23,8 +23,6 @@ import com.usersproyect.users.dao.userDAO;
 import com.usersproyect.users.utils.JWTUtil;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
-import de.mkammerer.argon2.Argon2Factory.Argon2Types;
-import jakarta.persistence.EntityManager;
 
 
 @RestController
@@ -37,8 +35,6 @@ public class UserController {
     private userDAO userDAO;
     @Autowired
     private JWTUtil jwtUtil;
-    @Autowired
-    private EntityManager entityManager;
     
     // Creamos un metodo que valida si el token es correcto y se 
     // lo implementamos a cada método que necesita autorización
@@ -61,7 +57,8 @@ public class UserController {
             return false;
         }
     }
-    
+
+
     // CURD REAL
 
     @GetMapping("/app/user/{id}")
@@ -138,62 +135,27 @@ public class UserController {
 
                  return ResponseEntity.ok(updatedUser);
      }
-    
-   
-    
-   
 
-
-    // MÉTODO LOGIN
-    public User getLoginUser (User usuario){
-        // Se devuelve una lista de usuarios que tienen el mismo mail, debería ser solo uno
-        List<User> lista = entityManager.createQuery("From User u where u.email = :email", User.class)
-            .setParameter("email", usuario.getEmail())
-            .getResultList();
-
-            if (lista.isEmpty()){
-                return null;
-            }
-            // Aquí verificamos la contraseña tomando el index 0 de la lista devuelta
-            String passwordHashed = lista.get(0).getPassword(); // Recuperamos el primer pass del elemento primero, puesto que debe ser único
-            char[] passwordChars = usuario.getPassword().toCharArray();
-            Argon2 argon2 = Argon2Factory.create(Argon2Types.ARGON2id);
-            
-            if(argon2.verify(passwordHashed, passwordChars)){ // aquí verificamos que el pass que tomamos de la lista sea igual que el que hay en la BBDD
-                return lista.get(0);
-            } else {
-                return null;
-            }
-    }
-
-    // @GetMapping("/app/users")
-    // Pedimos como parametro el token de autorización que trae en el Header
-    // en vez de ser un PathVariable, es un RequestHeader
-    /*public ResponseEntity<List<User>> GetAllUsers (@RequestHeader(value ="Authorization") String token) {
-        
-        // Usando ResponseEntity damos respuesta a las respuesta que hace la API
+    // IMPLEMENTACIÓN REST TEMPLATE
+    // Ahora los usuarios que estén registrados pueden entrar y consultar las películas
+    // que tiene el microServicio Movies dentro
+    @GetMapping("/app/movies/{id}")
+    public ResponseEntity<List<Movie>> getMovies(@RequestHeader(value = "Authorization") 
+                                                    String token,
+                                                    @PathVariable int id){
         if (!validateToken(token)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return ResponseEntity.ok(userDAO.findAll());
-    }*/
-
-    // IMPLEMENTACIÓN REST TEMPLATE
-    //api/
-    // Hemos desactivado la verificación de tokens en user, para que acepte verificar si existe el usuario
-    // y mostrar las peliculas que hay en el microServicio movies
-    @GetMapping("/app/movies/{id}")
-    public ResponseEntity<List<Movie>> getMovies(@PathVariable int id){
-
         Optional<User> user = userDAO.findById(id);
 
          if(user.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         // Cambiar a enviar directamente una Lista
-        @SuppressWarnings("unchecked")
-        List<Movie> movies = restTemplate.getForObject("http://localhost:8081/api/movies", List.class);
-        
+
+        Movie[] moviesArray = restTemplate.getForObject("http://localhost:8081/api/movies", Movie[].class);
+        List<Movie> movies = List.of(moviesArray);
+
         return ResponseEntity.ok(movies);
 
     }
