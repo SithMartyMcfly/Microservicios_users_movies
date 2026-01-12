@@ -1,8 +1,8 @@
-package sithmcfly.movies.repositories;
+package sithmcfly.movies.persistence;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-//importamos la Entidad
-import sithmcfly.movies.models.Movie;
+
+import sithmcfly.movies.entities.Movie;
 
 
 //Extiende de JpaRepository, y nos pide que le introduzcamos 

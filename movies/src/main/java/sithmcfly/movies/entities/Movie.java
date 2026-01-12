@@ -1,4 +1,4 @@
-package sithmcfly.movies.models;
+package sithmcfly.movies.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

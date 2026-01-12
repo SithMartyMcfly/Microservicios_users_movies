@@ -152,8 +152,10 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         // Cambiar a enviar directamente una Lista
-        Movie[] moviesArray = restTemplate.getForObject("http://localhost:8081/api/movies", Movie[].class);
-        List<Movie> movies = List.of(moviesArray);
+        
+        @SuppressWarnings("unchecked")
+        List<Movie> movies = restTemplate.getForObject("http://localhost:8081/api/movies", List.class);
+        //List<Movie> movies = List.of(moviesArray);
 
         return ResponseEntity.ok(movies);
 
