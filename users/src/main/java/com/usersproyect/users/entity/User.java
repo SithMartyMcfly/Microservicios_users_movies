@@ -1,4 +1,4 @@
-package com.usersproyect.users.Models;
+package com.usersproyect.users.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,7 +14,7 @@ public class User {
     @Column(name = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "nombre")
     private String nombre;
@@ -31,10 +31,10 @@ public class User {
     @Column(name = "password")
     private String password; 
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public String getNombre() {

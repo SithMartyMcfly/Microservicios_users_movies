@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.usersproyect.users.Models.User;
+import com.usersproyect.users.entity.User;
 import com.usersproyect.users.utils.JWTUtil;
 
 import de.mkammerer.argon2.Argon2;

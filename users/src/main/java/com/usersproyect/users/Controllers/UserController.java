@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.usersproyect.users.Models.User;
-import com.usersproyect.ModelsDTO.Movie;
-import com.usersproyect.users.dao.userDAO;
+import com.usersproyect.users.DTO.MovieDTO;
+import com.usersproyect.users.entity.User;
+import com.usersproyect.users.persistence.UserRepository;
 import com.usersproyect.users.utils.JWTUtil;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class UserController {
 
     @Autowired
-    private userDAO userDAO;
+    private UserRepository userDAO;
     @Autowired
     private JWTUtil jwtUtil;
     
