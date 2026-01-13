@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -83,4 +85,10 @@ public class MovieController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(impMovieService.voteMovie(id, voteRequest));
     }
+
+    @GetMapping("/movie/{idMovie}/users")
+    public ResponseEntity<?> findUsersById(@RequestParam Long idMovie) {
+        return ResponseEntity.ok(impMovieService.findUsersByMovie(idMovie));
+    }
+    
 }

@@ -8,4 +8,5 @@ import com.usersproyect.users.Models.User;
 
 public interface userDAO extends JpaRepository<User, Integer> {
 
+    List<UserDTO> findbyMovie (Long id);
 }

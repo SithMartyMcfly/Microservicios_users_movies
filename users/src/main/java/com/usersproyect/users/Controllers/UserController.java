@@ -23,14 +23,14 @@ import com.usersproyect.users.dao.userDAO;
 import com.usersproyect.users.utils.JWTUtil;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
 @RequestMapping("api/")
 public class UserController {
-    
-    @Autowired
-    private RestTemplate restTemplate;
+
     @Autowired
     private userDAO userDAO;
     @Autowired
@@ -76,7 +76,7 @@ public class UserController {
         return ResponseEntity.ok(user.get());
     }
     
-    @GetMapping("/app/users")
+    @GetMapping("/app/user")
     // Pedimos como parametro el token de autorización que trae en el Header
     // en vez de ser un PathVariable, es un RequestHeader
     public ResponseEntity<List<User>> GetAllUsers (@RequestHeader(value ="Authorization") String token) {
@@ -136,29 +136,10 @@ public class UserController {
                  return ResponseEntity.ok(updatedUser);
      }
 
-    // IMPLEMENTACIÓN REST TEMPLATE
-    // Ahora los usuarios que estén registrados pueden entrar y consultar las películas
-    // que tiene el microServicio Movies dentro
-    @GetMapping("/app/movies/{id}")
-    public ResponseEntity<List<Movie>> getMovies(@RequestHeader(value = "Authorization") 
-                                                    String token,
-                                                    @PathVariable int id){
-        if (!validateToken(token)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        Optional<User> user = userDAO.findById(id);
-
-         if(user.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        // Cambiar a enviar directamente una Lista
-        
-        @SuppressWarnings("unchecked")
-        List<Movie> movies = restTemplate.getForObject("http://localhost:8081/api/movies", List.class);
-        //List<Movie> movies = List.of(moviesArray);
-
-        return ResponseEntity.ok(movies);
-
+    @GetMapping("app/user/by-movie/{idMovie}")
+    public List<UserDTO> findUserByMovie(@PathVariable Long idMovie) {
+        return userDAO.findUserByMovie(idMovie);
     }
+    
 
 }

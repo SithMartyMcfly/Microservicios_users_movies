@@ -4,7 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -15,17 +16,38 @@ import java.util.Date;
 /**
  * @author Mahesh
  */
+@Configuration
+@ConfigurationProperties(prefix = "custom.security.jwt")
 @Component
 public class JWTUtil {
-    @Value("${security.jwt.secret}")
+    
     private String key;
-
-    @Value("${security.jwt.issuer}")
     private String issuer;
-
-    @Value("${security.jwt.ttlMillis}")
     private long ttlMillis;
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getIssuer() {
+        return issuer;
+    }
+
+    public void setIssuer(String issuer) {
+        this.issuer = issuer;
+    }
+
+    public long getTtlMillis() {
+        return ttlMillis;
+    }
+
+    public void setTtlMillis(long ttlMillis) {
+        this.ttlMillis = ttlMillis;
+    }
 
     /**
      * Create a new token.

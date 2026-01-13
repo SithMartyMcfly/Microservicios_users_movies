@@ -3,19 +3,25 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import sithmcfly.movies.DTO.UserDTO;
+import sithmcfly.movies.client.UserClient;
 import sithmcfly.movies.entities.Movie;
 import sithmcfly.movies.exception.MovieNotFoundException;
 import sithmcfly.movies.http.request.VoteRequest;
+import sithmcfly.movies.http.response.UserResponse;
+import sithmcfly.movies.http.response.UsersByMovieResponse;
 import sithmcfly.movies.http.response.VoteResponse;
 import sithmcfly.movies.persistence.MovieRepository;
 
 @Service
 public class ImpMovieService implements IMovieService{
     private MovieRepository movieRepository;
+    private UserClient userClient
 
     //Inyectamos por constructor para facilitar el testeo y buenas prácticas
-    public ImpMovieService (MovieRepository movieRepository){
+    public ImpMovieService (MovieRepository movieRepository, UserClient userClient ){
         this.movieRepository = movieRepository;
+        this.userClient = userClient;
     }
 
     @Override
@@ -75,5 +81,24 @@ public class ImpMovieService implements IMovieService{
 
         return new VoteResponse(movieVotes, newRating);
     }
+
+    //Método consulta microservicio Users
+    @Override
+    public UsersByMovieResponse findUsersByMovie(Long idMovie) {
+        // Consultamos la Movie
+        Movie movie = movieRepository
+                    .findById(idMovie)
+                    .orElseThrow(() -> new MovieNotFoundException(idMovie));
+        // Obtenemos los usuarios, inyectando el cliente UserClient
+        List<UserDTO> userDTOList = userClient.findUserByMovie(idMovie);
+        
+        return UsersByMovieResponse.builder()
+            .movieName(movie.getTitle())
+            .directorName(movie.getDirector())
+            .userList(userDTOList)
+            .build();
+    }
+
+    
 
 }
