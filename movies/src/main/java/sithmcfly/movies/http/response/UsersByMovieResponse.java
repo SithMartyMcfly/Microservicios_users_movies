@@ -6,7 +6,7 @@ import sithmcfly.movies.DTO.UserDTO;
 
 public class UsersByMovieResponse {
     private String movieName;
-    private String directorName;
+    private String director;
     private List<UserDTO> userList;
 
 
@@ -16,11 +16,11 @@ public class UsersByMovieResponse {
     public void setMovieName(String movieName) {
         this.movieName = movieName;
     }
-    public String getDirectorNameString() {
-        return directorName;
+    public String getDirector() {
+        return director;
     }
-    public void setDirectorNameString(String directorNameString) {
-        this.directorName = directorNameString;
+    public void setDirector(String director) {
+        this.director = director;
     }
     public List<UserDTO> getUserList() {
         return userList;
@@ -28,9 +28,9 @@ public class UsersByMovieResponse {
     public void setUserList(List<UserDTO> userList) {
         this.userList = userList;
     }
-    public UsersByMovieResponse(String movieName, String directorNameString, List<UserDTO> userList) {
+    public UsersByMovieResponse(String movieName, String director, List<UserDTO> userList) {
         this.movieName = movieName;
-        this.directorName = directorNameString;
+        this.director = director;
         this.userList = userList;
     }
     public UsersByMovieResponse() {

@@ -8,7 +8,6 @@ import sithmcfly.movies.client.UserClient;
 import sithmcfly.movies.entities.Movie;
 import sithmcfly.movies.exception.MovieNotFoundException;
 import sithmcfly.movies.http.request.VoteRequest;
-import sithmcfly.movies.http.response.UserResponse;
 import sithmcfly.movies.http.response.UsersByMovieResponse;
 import sithmcfly.movies.http.response.VoteResponse;
 import sithmcfly.movies.persistence.MovieRepository;
@@ -92,11 +91,13 @@ public class ImpMovieService implements IMovieService{
         // Obtenemos los usuarios, inyectando el cliente UserClient
         List<UserDTO> userDTOList = userClient.findUserByMovie(idMovie);
         
-        return UsersByMovieResponse.builder()
-            .movieName(movie.getTitle())
-            .directorName(movie.getDirector())
-            .userList(userDTOList)
-            .build();
+        UsersByMovieResponse response = new UsersByMovieResponse();
+
+        response.setMovieName(movie.getTitle());
+        response.setDirector(movie.getDirector());
+        response.setUserList(userDTOList);
+
+        return response;
     }
 
     
