@@ -1,8 +1,5 @@
 package sithmcfly.movies.entities;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,7 +13,6 @@ public class Movie {
     @Id // indica que es una PK
     @GeneratedValue(strategy = GenerationType.IDENTITY) // indica que es autogenerado
     private Long id;
-
     private String title;
     private String director;
     private String description;
@@ -26,9 +22,6 @@ public class Movie {
 
     @Column(name = "image_url")
     private String imageUrl;
-    // AÑADIR CLAVE FORÁNEA ID_USUARIO
-    /* Una List que contendrá los usuarios */
-    private List<Long> userSeen = new ArrayList<>();
     
     // en caso de que los nombres de las propiedades coincidan con los
     // nombres de los campos de la BBDD no hay que hacer nada
@@ -68,10 +61,6 @@ public class Movie {
         return imageUrl;
     }
     
-    public List<Long> getUserSeen() {
-        return userSeen;
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -102,9 +91,5 @@ public class Movie {
     
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public void setUserSeen(List<Long> userSeen) {
-        this.userSeen = userSeen;
     }
 }

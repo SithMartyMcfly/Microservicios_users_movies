@@ -1,6 +1,11 @@
 package com.usersproyect.users.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,7 +34,9 @@ public class User {
     private String telefono;
     
     @Column(name = "password")
-    private String password; 
+    private String password;
+    @ElementCollection
+    private List<Long> moviesSeenIds = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -67,4 +74,25 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+    public List<Long> getMoviesSeenIds() {
+        return moviesSeenIds;
+    }
+    public void setMoviesSeenIds(List<Long> moviesSeenIds) {
+        this.moviesSeenIds = moviesSeenIds;
+    }
+
+    public User(Long id, String nombre, String apellido, String email, String telefono, String password,
+            List<Long> moviesSeenIds) {
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.email = email;
+        this.telefono = telefono;
+        this.password = password;
+        this.moviesSeenIds = moviesSeenIds;
+    }
+    
+    public User() {
+    }
+    
 }

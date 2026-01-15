@@ -18,8 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.usersproyect.users.DTO.MovieDTO;
+import com.usersproyect.users.DTO.UserDTO;
 import com.usersproyect.users.entity.User;
+import com.usersproyect.users.http.request.UserCreateRequestDTO;
+import com.usersproyect.users.http.request.UserUpdateRequestDTO;
 import com.usersproyect.users.persistence.UserRepository;
+import com.usersproyect.users.service.IUserservice;
 import com.usersproyect.users.utils.JWTUtil;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
@@ -28,13 +32,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
-@RequestMapping("api/")
+@RequestMapping("api/users")
 public class UserController {
 
-    @Autowired
-    private UserRepository userDAO;
-    @Autowired
-    private JWTUtil jwtUtil;
+    private IUserservice userService;
+
+    public UserController (IUserservice userService){
+        this.userService = userService;;
+    }
     
     // Creamos un metodo que valida si el token es correcto y se 
     // lo implementamos a cada método que necesita autorización
@@ -48,7 +53,7 @@ public class UserController {
                 String userId = jwtUtil.getKey(tokenClean);
                 return userId != null;
             } else {
-                 String userId = jwtUtil.getKey(token);
+                String userId = jwtUtil.getKey(token);
                 return userId != null;
             }
             
@@ -57,88 +62,40 @@ public class UserController {
             return false;
         }
     }
-
-
-    // CURD REAL
-
-    @GetMapping("/app/user/{id}")
-    public ResponseEntity<User> GetUser (@RequestHeader(value="Authorization") String token, @PathVariable int id){
-        if (!validateToken(token)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        Optional<User> user = userDAO.findById(id);
-
-        if(user.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        return ResponseEntity.ok(user.get());
-    }
     
-    @GetMapping("/app/user")
-    // Pedimos como parametro el token de autorización que trae en el Header
-    // en vez de ser un PathVariable, es un RequestHeader
-    public ResponseEntity<List<User>> GetAllUsers (@RequestHeader(value ="Authorization") String token) {
+    
+    // CURD
+    @PostMapping("user")
+    public UserDTO CreateUser (@RequestBody UserCreateRequestDTO request) {
+        return userService.createUser(request);
+    }
+
+    @PutMapping("/{id}")
+    public UserDTO EditUser(@PathVariable Long id, @RequestBody UserUpdateRequestDTO request) {
+        return userService.updateUser(request, id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleleteUser (@PathVariable Long id) {
+        userService.deleteUser(id);
+    }
+
+    @GetMapping("/{id}")
+    public UserDTO GetUser (@PathVariable Long id){
+            return userService.getUser(id);
+        }
         
-        // Usando ResponseEntity damos respuesta a las respuesta que hace la API
-        if (!validateToken(token)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        return ResponseEntity.ok(userDAO.findAll());
-    }
-
-    @PostMapping("/app/user")
-    public ResponseEntity<User> CreateUser (@RequestBody User usuario) {
     
-        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
-        char[] passwordChars = usuario.getPassword().toCharArray();
-        String hashPassword = argon2.hash(1, 1024, 1, passwordChars);
-        usuario.setPassword(hashPassword);
-        // Guardamos el usuario que traemos en el body con la contraseña hasheada
-        userDAO.save(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-    
-    @DeleteMapping("/app/user/{id}")
-    public ResponseEntity<Void> GetDelete (@RequestHeader(value = "Authorization") String token, 
-                                            @PathVariable int id) {
-            if(!validateToken(token)){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
-            userDAO.deleteById(id);
-        return ResponseEntity.ok().build();
+    @GetMapping("/users")
+    public List<UserDTO> GetAllUsers () {
+        return userService.getAllUsers();
     }
 
     
-     @PutMapping("/app/user/{id}")
-     public ResponseEntity<User> EditUser ( @RequestHeader(value = "Authorization") 
-                                            String token, 
-                                            @RequestBody User user,
-                                            @PathVariable int id){
-                 if (!validateToken(token)){
-                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-                 }
-                 Optional<User> savedUser = userDAO.findById(id);
 
-                 if(savedUser.isEmpty()){
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-                 }
-
-                 User updatedUser = savedUser.get();
-                 updatedUser.setNombre(user.getNombre());
-                 updatedUser.setApellido(user.getApellido());
-                 updatedUser.setTelefono(user.getTelefono());
-                 updatedUser.setEmail(user.getEmail());
-
-                 userDAO.save(updatedUser);
-
-                 return ResponseEntity.ok(updatedUser);
-     }
-
-    @GetMapping("app/user/by-movie/{idMovie}")
+    @GetMapping("/user/by-movie/{idMovie}")
     public List<UserDTO> findUserByMovie(@PathVariable Long idMovie) {
-        return userDAO.findUserByMovie(idMovie);
+        return userService.getUsersByMovie(idMovie);
     }
     
 
