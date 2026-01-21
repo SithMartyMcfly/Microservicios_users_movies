@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.usersproyect.users.DTO.UserDTO;
 import com.usersproyect.users.entity.User;
+import com.usersproyect.users.exceptions.UnauthorizedException;
+import com.usersproyect.users.exceptions.BadRequestException;
+import com.usersproyect.users.exceptions.UserNotFoundException;
 import com.usersproyect.users.http.request.LoginRequestDTO;
 import com.usersproyect.users.http.request.UserCreateRequestDTO;
 import com.usersproyect.users.http.request.UserUpdateRequestDTO;
@@ -34,14 +37,23 @@ public class ImpUserService implements IUserservice {
 
     @Override
     public String login(LoginRequestDTO request) {
-        //Buscamos el usuario cuyo mail coincida
+        String email = request.getEmail();
+        if (email == null || email.isBlank()){
+            throw new BadRequestException("Debes introducir un Email");
+        }
+        String pass = request.getPassword();
+        if (pass == null || pass.isBlank()){
+            throw new BadRequestException("El password no debe estar vacío");
+        }
+
+        // Buscamos el usuario cuyo mail coincida
         // con lo que envía la request
        List <User> userList = entityManager.createQuery("From User u where u.email = :email", User.class)
                     .setParameter("email", request.getEmail())
                     .getResultList();
 
                     if (userList.isEmpty()){
-                        return null;
+                        throw new UnauthorizedException();
                     }
         User user = userList.get(0);
         String passwordHashed = userList.get(0).getPassword();
@@ -49,7 +61,7 @@ public class ImpUserService implements IUserservice {
         Argon2 argon2 = Argon2Factory.create(Argon2Types.ARGON2id);
 
         if(!argon2.verify(passwordHashed, passwordChars)){
-            return null;
+            throw new UnauthorizedException();
         } else {
             return jwtUtil.create(String.valueOf(user.getId()), user.getEmail());
         }
@@ -77,8 +89,7 @@ public class ImpUserService implements IUserservice {
     @Override
     public UserDTO updateUser(UserUpdateRequestDTO request, Long id) {
         User user = userRepository.findById(id)
-        //TODO excepciones
-                    .orElseThrow(()-> new RuntimeException("Usuario no encontrado"));
+                    .orElseThrow(()-> new UserNotFoundException(request.getEmail()));
 
         user.setNombre(request.getName());
         user.setApellido(request.getSurname());
@@ -93,16 +104,15 @@ public class ImpUserService implements IUserservice {
     @Override
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
-                    // TODO excepciones
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                    // Pasamos el id a String para usar la excepcion que recibe String
+                    .orElseThrow(() -> new UserNotFoundException(id.toString()));
         userRepository.delete(user);
     }
 
     @Override
     public UserDTO getUser(Long id) {
         User user = userRepository.findById(id)
-                    // TODO excepciones
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                    .orElseThrow(() -> new UserNotFoundException(id.toString()));
         return UserMapper.toResponseDTO(user);
     }
 
@@ -110,6 +120,10 @@ public class ImpUserService implements IUserservice {
     public List<UserDTO> getAllUsers() {
         // Encuentro los USERS
         List<User> userList = userRepository.findAll();
+
+        if (userList.isEmpty()){
+            throw new BadRequestException("No se han encontrado usuarios");
+        }
 
         // Paso la lista a Stream para trabajar con ella
         List<UserDTO> userMappedList = userList.stream()
