@@ -85,7 +85,7 @@ public class ImpUserService implements IUserservice {
         }
 
         // Hasheo la contraseña
-        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2i);
+        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
         String hashed = argon2.hash(1, 1024, 1, request.getPassword().toCharArray());
         // Asigno valores a una entidad USER
         User user = new User();

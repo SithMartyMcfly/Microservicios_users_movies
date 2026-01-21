@@ -14,6 +14,7 @@ public class UserMapper {
         dto.setName(user.getNombre());
         dto.setSurname(user.getApellido());
         dto.setEmail(user.getEmail());
+        dto.setPhone(user.getTelefono());
 
         return dto;
     }

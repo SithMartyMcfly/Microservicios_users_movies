@@ -56,7 +56,7 @@ public class UserController {
     }
 
     
-
+    
     @GetMapping("/by-movie/{idMovie}")
     public List<UserDTO> findUserByMovie(@PathVariable Long idMovie) {
         return userService.getUsersByMovie(idMovie);
