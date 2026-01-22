@@ -16,6 +16,6 @@ public interface IUserservice {
     UserDTO getUser (Long id);
     List<UserDTO> getAllUsers ();
     //Conexion con microservicio Movie
-    List<UserDTO> getUsersByMovie (Long idMovie);
+    //List<UserDTO> getUsersByMovie (Long idMovie);
 
 }

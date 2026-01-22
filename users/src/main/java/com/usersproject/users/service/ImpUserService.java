@@ -157,13 +157,13 @@ public class ImpUserService implements IUserservice {
     }
 
 
-    @Override
+    /*@Override
     public List<UserDTO> getUsersByMovie(Long idMovie) {
         List<User> userList = userRepository.getUsersByMovie(idMovie);
 
         return userList.stream()
                 .map(UserMapper::toResponseDTO)
                 .collect(Collectors.toList());
-    }
+    }*/
 
 }
