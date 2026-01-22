@@ -1,114 +1,63 @@
 package com.usersproject.users.utils;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
-/**
- * @author Mahesh
- */
-@Configuration
-@ConfigurationProperties(prefix = "custom.security.jwt")
 @Component
+@ConfigurationProperties(prefix = "custom.security.jwt")
 public class JWTUtil {
-    
+
     private String key;
     private String issuer;
     private long ttlMillis;
 
-    public String getKey() {
-        return key;
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
     }
 
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getIssuer() {
-        return issuer;
-    }
-
-    public void setIssuer(String issuer) {
-        this.issuer = issuer;
-    }
-
-    public long getTtlMillis() {
-        return ttlMillis;
-    }
-
-    public void setTtlMillis(long ttlMillis) {
-        this.ttlMillis = ttlMillis;
-    }
-
-    /**
-     * Create a new token.
-     *
-     * @param id
-     * @param subject
-     * @return
-     */
     public String create(String id, String subject) {
-
-        // The JWT signature algorithm used to sign the token
-        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
 
-        //  sign JWT with our ApiKey secret
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(key);
-        Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
+        JwtBuilder builder = Jwts.builder()
+                .setId(id)
+                .setSubject(subject)
+                .setIssuer(issuer)
+                .setIssuedAt(now)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256);
 
-        //  set the JWT Claims
-        JwtBuilder builder = Jwts.builder().setId(id).setIssuedAt(now).setSubject(subject).setIssuer(issuer)
-                .signWith(signatureAlgorithm, signingKey);
-
-        if (ttlMillis >= 0) {
-            long expMillis = nowMillis + ttlMillis;
-            Date exp = new Date(expMillis);
-            builder.setExpiration(exp);
+        if (ttlMillis > 0) {
+            builder.setExpiration(new Date(nowMillis + ttlMillis));
         }
 
-        // Builds the JWT and serializes it to a compact, URL-safe string
         return builder.compact();
     }
 
-    /**
-     * Method to validate and read the JWT
-     *
-     * @param jwt
-     * @return
-     */
-    public String getValue(String jwt) {
-        // This line will throw an exception if it is not a signed JWS (as
-        // expected)
-        Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(key))
-                .parseClaimsJws(jwt).getBody();
-
-        return claims.getSubject();
+    public String getSubject(String token) {
+        return parse(token).getBody().getSubject();
     }
 
-    /**
-     * Method to validate and read the JWT
-     *
-     * @param jwt
-     * @return
-     */
-    public String getKey(String jwt) {
-        // This line will throw an exception if it is not a signed JWS (as
-        // expected)
-        Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(key))
-                .parseClaimsJws(jwt).getBody();
-
-        return claims.getId();
+    public String getId(String token) {
+        return parse(token).getBody().getId();
     }
+
+    private Jws<Claims> parse(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token);
+    }
+
+    // Getters y setters para ConfigurationProperties
+    public void setKey(String key) { this.key = key; }
+    public void setIssuer(String issuer) { this.issuer = issuer; }
+    public void setTtlMillis(long ttlMillis) { this.ttlMillis = ttlMillis; }
 }
+
