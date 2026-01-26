@@ -7,12 +7,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-import com.nimbusds.jwt.JWTClaimsSet;
 import com.usersproject.users.DTO.LoginUserDto;
 import com.usersproject.users.DTO.UserDTO;
 import com.usersproject.users.entity.User;
