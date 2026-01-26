@@ -21,7 +21,7 @@ public class SecurityConfig {
             // Configuración de peticiones que van con autenticación
             .authorizeHttpRequests(auth -> auth
                 // Rutas permitidas para entrar sin Autenticación
-                .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/api/login").permitAll()
                 .requestMatchers("/api/users").permitAll()
                 // El resto de rutas necesitan Autenticación
                 .anyRequest().authenticated()    
@@ -30,7 +30,7 @@ public class SecurityConfig {
                 // Vamos a usar un token de tipo JWT
                 .jwt(jwt -> jwt
                     // Le decimos como va a convertir JWT usando
-                    // nuestra clase UserHwtConverter
+                    // nuestra clase UserJwtConverter
                     .jwtAuthenticationConverter(new UserJwtConverter())
                 )
             );

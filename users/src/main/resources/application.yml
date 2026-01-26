@@ -9,13 +9,4 @@ spring:
   url: jdbc:mysql://127.0.0.1:3306/users
   username: root
   password: migato
- 
-custom:
- security:
-   jwt:
-     key: perro
-     issuer: Main
-     ttlMillis: 604800000
-
-
 

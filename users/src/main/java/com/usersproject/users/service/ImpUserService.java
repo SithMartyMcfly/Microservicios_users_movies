@@ -6,12 +6,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.usersproject.users.DTO.LoginUserDto;
 import com.usersproject.users.DTO.UserDTO;
 import com.usersproject.users.entity.User;
 import com.usersproject.users.exceptions.BadRequestException;
 import com.usersproject.users.exceptions.UnauthorizedException;
 import com.usersproject.users.exceptions.UserNotFoundException;
-import com.usersproject.users.http.request.LoginRequestDTO;
 import com.usersproject.users.http.request.UserCreateRequestDTO;
 import com.usersproject.users.http.request.UserUpdateRequestDTO;
 import com.usersproject.users.mappers.UserMapper;
@@ -35,9 +35,9 @@ public class ImpUserService implements IUserservice {
         this.jwtUtil = jwtUtil;
         this.entityManager = entityManager;
     }
-
+    
     @Override
-    public String login(LoginRequestDTO request) {
+    public String login(LoginUserDto request) {
         String email = request.getEmail();
         if (email == null || email.isBlank()){
             throw new BadRequestException("Debes introducir un Email");
@@ -61,10 +61,10 @@ public class ImpUserService implements IUserservice {
         char[] passwordChars = request.getPassword().toCharArray();
         Argon2 argon2 = Argon2Factory.create(Argon2Types.ARGON2id);
 
-        if(!argon2.verify(passwordHashed, passwordChars)){
-            throw new UnauthorizedException();
-        } else {
+        if(argon2.verify(passwordHashed, passwordChars)){
             return jwtUtil.create(String.valueOf(user.getId()), user.getEmail());
+        } else {
+            throw new UnauthorizedException();
         }
     }
 
@@ -86,7 +86,8 @@ public class ImpUserService implements IUserservice {
 
         // Hasheo la contraseña
         Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
-        String hashed = argon2.hash(1, 1024, 1, request.getPassword().toCharArray());
+        char[] passwordChars = request.getPassword().toCharArray();
+        String hashed = argon2.hash(1, 1024, 1, passwordChars);
         // Asigno valores a una entidad USER
         User user = new User();
         user.setNombre(request.getName());

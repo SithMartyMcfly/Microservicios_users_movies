@@ -50,7 +50,7 @@ public class UserController {
         }
         
     
-    @GetMapping
+    @GetMapping("/list")
     public List<UserDTO> getAllUsers () {
         return userService.getAllUsers();
     }
