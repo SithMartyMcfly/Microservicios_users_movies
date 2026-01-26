@@ -56,6 +56,7 @@ public class JWTUtil {
     }
 
     // Getters y setters para ConfigurationProperties
+    public String getKey() { return key; }
     public void setKey(String key) { this.key = key; }
     public void setIssuer(String issuer) { this.issuer = issuer; }
     public void setTtlMillis(long ttlMillis) { this.ttlMillis = ttlMillis; }

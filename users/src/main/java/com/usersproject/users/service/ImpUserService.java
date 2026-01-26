@@ -46,6 +46,8 @@ public class ImpUserService implements IUserservice {
         if (pass == null || pass.isBlank()){
             throw new BadRequestException("El password no debe estar vacío");
         }
+        System.out.println("EMAIL RECIBIDO: [" + request.getEmail() + "]");
+        System.out.println("PASS RECIBIDO:  [" + request.getPassword() + "]");
 
         // Buscamos el usuario cuyo mail coincida
         // con lo que envía la request
@@ -61,7 +63,15 @@ public class ImpUserService implements IUserservice {
         char[] passwordChars = request.getPassword().toCharArray();
         Argon2 argon2 = Argon2Factory.create(Argon2Types.ARGON2id);
 
-        if(argon2.verify(passwordHashed, passwordChars)){
+        System.out.println("HASH BBDD: [" + passwordHashed + "]");
+        System.out.println("HASH LENGTH: " + passwordHashed.length());
+        System.out.println(passwordChars.toString());
+
+        boolean test = argon2.verify(passwordHashed, passwordChars);
+        System.out.println("VERIFY MANUAL: " + test);
+
+
+        if(test){
             return jwtUtil.create(String.valueOf(user.getId()), user.getEmail());
         } else {
             throw new UnauthorizedException();

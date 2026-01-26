@@ -1,15 +1,24 @@
 package com.usersproject.users.security;
 
 
+import java.nio.charset.StandardCharsets;
+
 import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.usersproject.users.utils.JWTUtil;
+
+import io.jsonwebtoken.security.Keys;
+
+@EnableWebSecurity
 @Configuration
 public class SecurityConfig {
     @Bean
@@ -40,9 +49,11 @@ public class SecurityConfig {
 
     // 🔥 ESTE ES EL DECODER — VA AQUÍ MISMO, EN ESTA CLASE
     @Bean
-    public JwtDecoder jwtDecoder() {
-        SecretKeySpec secretKey = new SecretKeySpec("perro".getBytes(), "HmacSHA256");
-        return NimbusJwtDecoder.withSecretKey(secretKey).build();
+    public JwtDecoder jwtDecoder(JWTUtil jwtUtil) {
+       
+        return NimbusJwtDecoder.withSecretKey(
+             Keys.hmacShaKeyFor(jwtUtil.getKey().getBytes(StandardCharsets.UTF_8))
+        ).build();
     }
 
 
