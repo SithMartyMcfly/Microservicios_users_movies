@@ -1,26 +1,29 @@
 package com.usersproject.users.security;
 
 
-import java.nio.charset.StandardCharsets;
 
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.usersproject.users.utils.JWTUtil;
+import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
-import io.jsonwebtoken.security.Keys;
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
+
+    private static final String SECRET = "perroperroperroperroperroperroperro";
+
     @Bean
     public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
         // configuramos el objeto HttpSecurity
@@ -47,15 +50,18 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 🔥 ESTE ES EL DECODER — VA AQUÍ MISMO, EN ESTA CLASE
+    
     @Bean
-    public JwtDecoder jwtDecoder(JWTUtil jwtUtil) {
-       
-        return NimbusJwtDecoder.withSecretKey(
-             Keys.hmacShaKeyFor(jwtUtil.getKey().getBytes(StandardCharsets.UTF_8))
-        ).build();
+    public JwtEncoder JwtEncoder (){
+        SecretKey key = new SecretKeySpec(SECRET.getBytes(), "HmacSHA256");
+        return new NimbusJwtEncoder(new ImmutableSecret<>(key));
     }
-
+    
+    @Bean
+    public JwtDecoder JwtDecoder() {
+        SecretKey key = new SecretKeySpec(SECRET.getBytes(), "HmacSHA256");
+        return NimbusJwtDecoder.withSecretKey(key).build();
+    }
 
     
 }

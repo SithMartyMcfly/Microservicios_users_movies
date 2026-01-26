@@ -1,11 +1,18 @@
 package com.usersproject.users.service;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import java.util.stream.Collectors;
 
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.usersproject.users.DTO.LoginUserDto;
 import com.usersproject.users.DTO.UserDTO;
 import com.usersproject.users.entity.User;
@@ -16,7 +23,6 @@ import com.usersproject.users.http.request.UserCreateRequestDTO;
 import com.usersproject.users.http.request.UserUpdateRequestDTO;
 import com.usersproject.users.mappers.UserMapper;
 import com.usersproject.users.persistence.UserRepository;
-import com.usersproject.users.utils.JWTUtil;
 import com.usersproject.users.utils.Validator;
 
 import de.mkammerer.argon2.Argon2;
@@ -28,12 +34,13 @@ import jakarta.persistence.EntityManager;
 public class ImpUserService implements IUserservice {
 
     private final UserRepository userRepository;
-    private final JWTUtil jwtUtil;
     private final EntityManager entityManager;
-    public ImpUserService (UserRepository userRepository, JWTUtil jwtUtil, EntityManager entityManager){
+    private JwtEncoder jwtEncoder;
+
+    public ImpUserService (UserRepository userRepository, EntityManager entityManager, JwtEncoder jwtEncoder){
         this.userRepository = userRepository;
-        this.jwtUtil = jwtUtil;
         this.entityManager = entityManager;
+        this.jwtEncoder = jwtEncoder;
     }
     
     @Override
@@ -46,8 +53,6 @@ public class ImpUserService implements IUserservice {
         if (pass == null || pass.isBlank()){
             throw new BadRequestException("El password no debe estar vacío");
         }
-        System.out.println("EMAIL RECIBIDO: [" + request.getEmail() + "]");
-        System.out.println("PASS RECIBIDO:  [" + request.getPassword() + "]");
 
         // Buscamos el usuario cuyo mail coincida
         // con lo que envía la request
@@ -58,25 +63,32 @@ public class ImpUserService implements IUserservice {
                     if (userList.isEmpty()){
                         throw new UnauthorizedException();
                     }
+
         User user = userList.get(0);
         String passwordHashed = user.getPassword();
         char[] passwordChars = request.getPassword().toCharArray();
         Argon2 argon2 = Argon2Factory.create(Argon2Types.ARGON2id);
 
-        System.out.println("HASH BBDD: [" + passwordHashed + "]");
-        System.out.println("HASH LENGTH: " + passwordHashed.length());
-        System.out.println(passwordChars.toString());
-
         boolean test = argon2.verify(passwordHashed, passwordChars);
         System.out.println("VERIFY MANUAL: " + test);
 
 
-        if(test){
-            return jwtUtil.create(String.valueOf(user.getId()), user.getEmail());
-        } else {
+        if(!argon2.verify(passwordHashed, passwordChars)){
             throw new UnauthorizedException();
         }
-    }
+
+        Instant now = Instant.now();
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+        .id(String.valueOf(user.getId()))
+        .subject(user.getEmail())
+        .issuer("users-service")
+        .issuedAt(now)
+        .expiresAt(now.plus(1, ChronoUnit.HOURS))
+        .build();
+
+        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+}
+
 
     @Override
     public UserDTO createUser(UserCreateRequestDTO request) {
