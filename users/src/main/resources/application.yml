@@ -10,3 +10,10 @@ spring:
   username: root
   password: migato
 
+custom:
+ security:
+  jwt:
+   key: "perroperroperroperroperroperroperro"
+   issuer: "users-service"
+   ttMillis: 3600000
+

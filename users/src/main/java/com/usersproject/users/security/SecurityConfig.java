@@ -12,6 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
+
     @Bean
     public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
         // configuramos el objeto HttpSecurity
@@ -23,6 +24,9 @@ public class SecurityConfig {
                 // Rutas permitidas para entrar sin Autenticación
                 .requestMatchers("/api/login").permitAll()
                 .requestMatchers("/api/users").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()              
+
                 // El resto de rutas necesitan Autenticación
                 .anyRequest().authenticated()    
             )
@@ -38,13 +42,11 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 🔥 ESTE ES EL DECODER — VA AQUÍ MISMO, EN ESTA CLASE
+    
     @Bean
     public JwtDecoder jwtDecoder() {
-        SecretKeySpec secretKey = new SecretKeySpec("perro".getBytes(), "HmacSHA256");
+        SecretKeySpec secretKey = new SecretKeySpec("perroperroperroperroperroperroperro".getBytes(), "HmacSHA256");
         return NimbusJwtDecoder.withSecretKey(secretKey).build();
     }
-
-
-    
+ 
 }
