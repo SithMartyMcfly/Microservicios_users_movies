@@ -6,11 +6,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.usersproject.users.DTO.LoginUserDto;
 import com.usersproject.users.DTO.UserDTO;
 import com.usersproject.users.entity.User;
 import com.usersproject.users.exceptions.BadRequestException;
-import com.usersproject.users.exceptions.UnauthorizedException;
 import com.usersproject.users.exceptions.UserNotFoundException;
 import com.usersproject.users.http.request.UserCreateRequestDTO;
 import com.usersproject.users.http.request.UserUpdateRequestDTO;
@@ -21,52 +19,16 @@ import com.usersproject.users.utils.Validator;
 
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
-import de.mkammerer.argon2.Argon2Factory.Argon2Types;
 import jakarta.persistence.EntityManager;
 
 @Service
 public class ImpUserService implements IUserservice {
 
     private final UserRepository userRepository;
-    private final JWTUtil jwtUtil;
-    private final EntityManager entityManager;
     public ImpUserService (UserRepository userRepository, JWTUtil jwtUtil, EntityManager entityManager){
         this.userRepository = userRepository;
-        this.jwtUtil = jwtUtil;
-        this.entityManager = entityManager;
     }
     
-    @Override
-    public String login(LoginUserDto request) {
-        String email = request.getEmail();
-        if (email == null || email.isBlank()){
-            throw new BadRequestException("Debes introducir un Email");
-        }
-        String pass = request.getPassword();
-        if (pass == null || pass.isBlank()){
-            throw new BadRequestException("El password no debe estar vacío");
-        }
-
-        // Buscamos el usuario cuyo mail coincida
-        // con lo que envía la request
-       List <User> userList = entityManager.createQuery("Select u From User u where u.email = :email", User.class)
-                    .setParameter("email", request.getEmail())
-                    .getResultList();
-
-                    if (userList.isEmpty()){
-                        throw new UnauthorizedException();
-                    }
-        User user = userList.get(0);
-        String passwordHashed = user.getPassword();
-        char[] passwordChars = request.getPassword().toCharArray();
-        Argon2 argon2 = Argon2Factory.create(Argon2Types.ARGON2id);
-        if(argon2.verify(passwordHashed, passwordChars)){
-            return jwtUtil.create(String.valueOf(user.getId()), user.getEmail());
-        } else {
-            throw new UnauthorizedException();
-        }
-    }
-
     @Override
     public UserDTO createUser(UserCreateRequestDTO request) {
 

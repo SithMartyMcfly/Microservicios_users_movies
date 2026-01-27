@@ -1,6 +1,7 @@
 package com.usersproject.users.persistence;
 
 
+import java.util.Optional;
 
 //import java.util.List;
 
@@ -9,8 +10,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.usersproject.users.entity.User;
 
+
 public interface UserRepository extends JpaRepository<User, Long> {
     //@Query("SELECT u from User u JOIN u.movies m WHERE m.id = :idMovie")
     //List<User> getUsersByMovie (Long idMovie);
     boolean existsByEmail(String email);
+    Optional<User> findByEmail(String email);
 }
