@@ -1,5 +1,6 @@
 package com.usersproject.users.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.stream.Collectors;
@@ -67,14 +68,26 @@ public class ImpUserService implements IUserservice {
     public UserDTO updateUser(UserUpdateRequestDTO request, Long id) {
         User user = userRepository.findById(id)
                     .orElseThrow(()-> new UserNotFoundException(id.toString()));
-        // Validamos los datos que trae para actualizarse
-        Validator.fieldRequired("El email no puede estar vacío", request.getEmail());
-        Validator.fieldRequired("El nombre no puede estar vacío", request.getName());
-        Validator.fieldRequired("El apellido no puede estar vacío", request.getSurname());
-        Validator.fieldRequired("El teléfono no puede estar vacío", request.getPhone());
+
+            List<String> errorList = new ArrayList<>();
+        
+        if (request.getName() == null || request.getName().isBlank()){
+            errorList.add("El campo Nombre no puede estar vacío");
+        }
+        if (request.getEmail() == null || request.getName().isBlank()){
+            errorList.add("El campo Email no puede estar vacío");
+        }
+        if (request.getSurname() == null || request.getName().isBlank()){
+            errorList.add("El campo Apellido no puede estar vacío");
+        }
+
 
         if (!user.getEmail().equalsIgnoreCase(request.getEmail()) && userRepository.existsByEmail(request.getEmail())){
-            throw new BadRequestException("Email " + request.getEmail() + " está en uso");
+            errorList.add("Email " + request.getEmail() + " está en uso");
+        }
+
+        if (!errorList.isEmpty()){
+            throw new BadRequestException(errorList);
         }
 
         user.setNombre(request.getName());
