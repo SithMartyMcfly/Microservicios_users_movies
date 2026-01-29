@@ -15,6 +15,7 @@ import com.usersproject.users.http.request.UserCreateRequestDTO;
 import com.usersproject.users.http.request.UserUpdateRequestDTO;
 import com.usersproject.users.mappers.UserMapper;
 import com.usersproject.users.persistence.UserRepository;
+import com.usersproject.users.utils.HashPassword;
 import com.usersproject.users.utils.JWTUtil;
 import com.usersproject.users.utils.Validator;
 
@@ -47,9 +48,7 @@ public class ImpUserService implements IUserservice {
         }
 
         // Hasheo la contraseña
-        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
-        char[] passwordChars = request.getPassword().toCharArray();
-        String hashed = argon2.hash(1, 1024, 1, passwordChars);
+        String hashed = HashPassword.hash(request.getPassword());
         // Asigno valores a una entidad USER
         User user = new User();
         user.setNombre(request.getName());

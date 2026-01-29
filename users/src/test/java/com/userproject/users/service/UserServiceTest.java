@@ -3,6 +3,7 @@ package com.userproject.users.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -17,6 +18,7 @@ import com.usersproject.users.DTO.UserDTO;
 import com.usersproject.users.entity.User;
 import com.usersproject.users.exceptions.BadRequestException;
 import com.usersproject.users.exceptions.UserNotFoundException;
+import com.usersproject.users.http.request.UserCreateRequestDTO;
 import com.usersproject.users.http.request.UserUpdateRequestDTO;
 import com.usersproject.users.persistence.UserRepository;
 import com.usersproject.users.service.ImpUserService;
@@ -149,7 +151,7 @@ public class UserServiceTest {
             assertTrue(ex.getErrors().contains("El campo Apellido no puede estar vacío"));    
     }
 
-    //Test usuario no existe en la BBDD
+    //Test usuario método update no existe en la BBDD
     void updateUserThrowsException_whenUserDoesNotExist(){
          UserUpdateRequestDTO request = new UserUpdateRequestDTO();
 
@@ -162,4 +164,25 @@ public class UserServiceTest {
         assertThrows(UserNotFoundException.class, () -> userService.updateUser(request, 1L));
     }
 
+    //Test creación de usuario
+    @Test
+    void createUser_createsCorrectly() {
+        UserCreateRequestDTO createUser = new UserCreateRequestDTO();
+        createUser.setName("Antonio");
+        createUser.setSurname("Gutiérrez");
+        createUser.setPhone("1234");
+        createUser.setPassword("1234");
+        createUser.setEmail("guti@gmail.com");
+
+        when(userRepository.existsByEmail(createUser.getEmail())).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenAnswer(invocation->invocation.getArgument(0));
+
+        UserDTO result = new UserDTO();
+
+        assertEquals("Antonio", result.getName());
+        assertEquals("Gutiérrez", result.getSurname());
+        assertEquals("guti@gmail.com", result.getEmail());
+
+    }
+    
 }
