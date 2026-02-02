@@ -6,14 +6,14 @@ spring:
 
  datasource:
   driver-class-name: com.mysql.cj.jdbc.Driver
-  url: jdbc:mysql://127.0.0.1:3306/users
-  username: root
-  password: migato
+  url: ${DB_URL}
+  username: ${DB_USERNAME}
+  password: ${DB_PASSWORD}
 
 custom:
  security:
   jwt:
-   key: "perroperroperroperroperroperroperro"
-   issuer: "users-service"
-   ttMillis: 3600000
+   key: ${JWT_KEY}
+   issuer: ${JWT_ISSUER}
+   ttMillis: ${JWT_TT_MILLIS}
 
