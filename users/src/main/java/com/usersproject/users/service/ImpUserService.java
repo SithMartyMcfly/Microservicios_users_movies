@@ -19,8 +19,6 @@ import com.usersproject.users.utils.HashPassword;
 import com.usersproject.users.utils.JWTUtil;
 import com.usersproject.users.utils.Validator;
 
-import de.mkammerer.argon2.Argon2;
-import de.mkammerer.argon2.Argon2Factory;
 import jakarta.persistence.EntityManager;
 
 @Service

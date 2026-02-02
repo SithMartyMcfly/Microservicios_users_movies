@@ -1,15 +1,20 @@
 package com.userproject.users.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -32,8 +37,8 @@ public class UserServiceTest {
     @InjectMocks
     private ImpUserService userService;
 
-
-    // Test para getUsers
+    // TEST GETUSERS
+    // Test para getUsers GETUSERS
     @Test
     void getUser_returnsUserDTO_whenUserExists (){
         // Creamos un objeto
@@ -58,15 +63,15 @@ public class UserServiceTest {
 
     }
 
-    // Test en caso de fallo busca el mock que hemos hecho antes
+    // Test en caso de fallo busca el mock que hemos hecho antes GETUSERS
     @Test
     void getUserThrowsException_whenUserDoesNotExists () {
         when(userRepository.findById(68L)).thenReturn(Optional.empty());
         assertThrows(UserNotFoundException.class, ()->userService.getUser(68L));
     }
 
-
-    //Test para updates
+    // TEST UPDATEUSERS
+    // Test para updates UPDATEUSERS
     @Test
     void updateUser_updatesFieldsCorrect () {
         User existingUser = new User();
@@ -96,7 +101,7 @@ public class UserServiceTest {
         assertEquals("1928New", result.getPhone());
     }
 
-    // Test mail existe en la BBDD
+    // Test mail existe en la BBDD UPDATEUSERS
     @Test
     void updateUserThrowsException_whenUserEmailExists (){
         User user = new User();
@@ -120,7 +125,7 @@ public class UserServiceTest {
   
     }
     
-    // Test campos en blanco
+    // Test campos en blanco UPDATEUSERS
     @Test
     void updateUserThrowsException_whenUserHasBlankFields () {
         // Usuario simulado
@@ -151,7 +156,8 @@ public class UserServiceTest {
             assertTrue(ex.getErrors().contains("El campo Apellido no puede estar vacío"));    
     }
 
-    //Test usuario método update no existe en la BBDD
+    //Test usuario método update no existe en la BBDD UPDATEUSERS
+    @Test
     void updateUserThrowsException_whenUserDoesNotExist(){
          UserUpdateRequestDTO request = new UserUpdateRequestDTO();
 
@@ -164,7 +170,8 @@ public class UserServiceTest {
         assertThrows(UserNotFoundException.class, () -> userService.updateUser(request, 1L));
     }
 
-    //Test creación de usuario
+    // TEST CREATEUSERS
+    // Test creación de usuario CREATEUSER
     @Test
     void createUser_createsCorrectly() {
         UserCreateRequestDTO createUser = new UserCreateRequestDTO();
@@ -175,14 +182,76 @@ public class UserServiceTest {
         createUser.setEmail("guti@gmail.com");
 
         when(userRepository.existsByEmail(createUser.getEmail())).thenReturn(false);
+        // save() devuelve el mismo objeto que recibe
         when(userRepository.save(any(User.class))).thenAnswer(invocation->invocation.getArgument(0));
 
-        UserDTO result = new UserDTO();
+        UserDTO result = userService.createUser(createUser);
 
         assertEquals("Antonio", result.getName());
         assertEquals("Gutiérrez", result.getSurname());
         assertEquals("guti@gmail.com", result.getEmail());
 
+    }
+
+    // Hasheo correcto de la contraseña CREATEUSER
+    @Test
+    void createUser_HashesPasswordCorrectly(){
+       UserCreateRequestDTO createUser = new UserCreateRequestDTO();
+       createUser.setName("Antonio");
+       createUser.setSurname("Gutiérrez");
+       createUser.setPhone("1234");
+       createUser.setPassword("1234");
+       createUser.setEmail("guti@gmail.com");
+       
+       when(userRepository.existsByEmail("guti@gmail.com")).thenReturn(false);
+
+       when(userRepository.save(any(User.class)))
+        .then(invocation -> invocation.getArgument(0));
+
+        userService.createUser(createUser);
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(captor.capture());
+
+        User savedUser = captor.getValue();
+
+        // La contraseña no coincide con la que se introdujo y hay guardada
+        assertNotEquals("1234", savedUser.getPassword());
+        // La contraseña no está null
+        assertNotNull(savedUser.getPassword());
+        // La contraseña no esta en blanco
+        assertFalse(savedUser.getPassword().isBlank());
+        // La contraseña empieza con el prefijo tipico de ARGON2
+        assertTrue(savedUser.getPassword().startsWith("$argon2id$"));
+
+    }
+
+    // Test usuario existe CREATEUSER
+    @Test
+    void createUserThrowsException_whenEmailAlreadyExists(){
+        UserCreateRequestDTO existingUser = new UserCreateRequestDTO();
+        existingUser.setName("Antonio");
+        existingUser.setSurname("Gutiérrez");
+        existingUser.setEmail("guti@gmail.com");
+        existingUser.setPhone("1234");
+        existingUser.setPassword("1234");
+
+        when(userRepository.existsByEmail("guti@gmail.com")).thenReturn(true);
+
+        assertThrows(BadRequestException.class, ()->userService.createUser(existingUser));
+
+    }
+
+    // Test campos en blanco CREATEUSER
+    @Test
+    void createUserThrowsException_whenFieldsAreBlank(){
+        UserCreateRequestDTO existingUser = new UserCreateRequestDTO();
+        existingUser.setName("");
+        existingUser.setSurname("");
+        existingUser.setEmail("");
+        existingUser.setPhone("");
+        existingUser.setPassword("");
+
+        assertThrows(BadRequestException.class, ()-> userService.createUser(existingUser));
     }
     
 }
