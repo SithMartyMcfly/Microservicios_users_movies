@@ -1,4 +1,6 @@
 package sithmcfly.movies.service;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,15 +63,32 @@ public class ImpMovieService implements IMovieService{
     }
 
     @Override
-    public MovieResponseUpdateDTO editMovie(MovieRequestDTO updatedMovie, Long id) {
+    public MovieResponseUpdateDTO editMovie(MovieRequestDTO request, Long id) {
         Movie movie = movieRepository.findById(id)
         .orElseThrow(() -> new MovieNotFoundException(id));
 
-        movie.setTitle(updatedMovie.getTitle());
-        movie.setDescription(updatedMovie.getDescription());
-        movie.setDirector(updatedMovie.getDirector());
-        movie.setYear(updatedMovie.getYear());
-        movie.setImageUrl(updatedMovie.getImageUrl());
+        List<String> errorList = new ArrayList<>();
+
+        if(request.getTitle()== null || request.getTitle().isBlank())
+            errorList.add("El campo título no puede estar vacío");
+
+        if(request.getDirector()== null || request.getDirector().isBlank())
+            errorList.add("El campo director no puede estar vacío");
+
+        if(request.getYear()>LocalDate.now().getYear() || request.getYear()<1888)
+            errorList.add("El campo titulo no puede estar vacío");
+
+        if(request.getTitle()== null || request.getTitle().isBlank())
+            errorList.add("El campo titulo no puede estar vacío");
+        
+        if(request.getTitle()== null || request.getTitle().isBlank())
+            errorList.add("El campo titulo no puede estar vacío");
+        
+        movie.setTitle(request.getTitle());
+        movie.setDescription(request.getDescription());
+        movie.setDirector(request.getDirector());
+        movie.setYear(request.getYear());
+        movie.setImageUrl(request.getImageUrl());
         // Debemos estudiar si cambiar la puntuación de la película
 
         return MovieMapper.toUpdateResponseDTO(movie);

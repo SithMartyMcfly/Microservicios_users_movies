@@ -1,9 +1,10 @@
 package sithmcfly.movies.http.request;
 
-import jakarta.validation.constraints.Size;
-import sithmcfly.movies.utils.validation.ValidYear;
 
 import jakarta.validation.constraints.NotBlank;
+import sithmcfly.movies.utils.validation.MaxYear.MaxYear;
+import sithmcfly.movies.utils.validation.minYear.MinYear;
+
 
 public class MovieRequestDTO {
     @NotBlank(message = "El campo título es obligatorio")
@@ -11,8 +12,8 @@ public class MovieRequestDTO {
     @NotBlank(message = "El campo director es obligatorio")
     private String director;
     private String description;
-    @Size(min = 1888, message= "La primera película de la historia fue en 1888")
-    @ValidYear //Validación personalizada
+    @MaxYear //Validación personalizada
+    @MinYear //Validación personalizada
     private int year;
     private String imageUrl;
 
@@ -59,11 +60,4 @@ public class MovieRequestDTO {
     }
     public MovieRequestDTO() {
     }
-    
-
-    
-    
-
-    
-
 }

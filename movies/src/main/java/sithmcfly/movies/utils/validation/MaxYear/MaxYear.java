@@ -1,4 +1,4 @@
-package sithmcfly.movies.utils.validation;
+package sithmcfly.movies.utils.validation.MaxYear;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
@@ -11,9 +11,9 @@ import jakarta.validation.Payload;;
 @Target({ElementType.FIELD}) // La usamos en los campos
 @Retention(RetentionPolicy.RUNTIME) // Se mantiene en tiempo de ejecución
 @Constraint(validatedBy = YearValidator.class) // Clase que valida
-public @interface ValidYear {
+public @interface MaxYear {
     // Mensaje de error
-    String message() default "El año no puede ser mayour que el actual";
+    String message() default "El año no puede ser mayor que el actual";
     // Standard
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default{};
