@@ -1,15 +1,20 @@
 package sithmcfly.movies.service;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import sithmcfly.movies.DTO.MovieDTO;
 import sithmcfly.movies.DTO.UserDTO;
 import sithmcfly.movies.client.UserClient;
 import sithmcfly.movies.entities.Movie;
 import sithmcfly.movies.exception.MovieNotFoundException;
+import sithmcfly.movies.http.request.MovieCreateRequestDTO;
 import sithmcfly.movies.http.request.VoteRequest;
 import sithmcfly.movies.http.response.UsersByMovieResponse;
 import sithmcfly.movies.http.response.VoteResponse;
+import sithmcfly.movies.mappers.MovieMapper;
 import sithmcfly.movies.persistence.MovieRepository;
 
 @Service
@@ -24,19 +29,26 @@ public class ImpMovieService implements IMovieService{
     }
 
     @Override
-    public List<Movie> findAll() {
+    public List<MovieDTO> findAll() {
        List<Movie> movieList = movieRepository.findAll();
-       return movieList;
+       return movieList.stream()
+                .map(MovieMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Movie findById(Long id) {
-        return movieRepository.findById(id)
-            .orElseThrow(() -> new MovieNotFoundException(id));
+    public MovieDTO findById(Long id) {
+        Movie movie = movieRepository.findById(id)
+        .orElseThrow(() -> new MovieNotFoundException(id));
+
+        return MovieMapper.toResponseDTO(movie);
     }
 
     @Override
-    public Movie createMovie(Movie movie) {
+    public Movie createMovie(MovieCreateRequestDTO movie) {
+        
+        
+
         return movieRepository.save(movie);
     }
 
@@ -64,6 +76,8 @@ public class ImpMovieService implements IMovieService{
         return movie; //JPA va a hacer la actualización auto
     }
 
+
+    // FUERA DEL CRUD
     @Override
     public VoteResponse voteMovie(Long id, VoteRequest voteRequest) {
         // Encontrar la película
