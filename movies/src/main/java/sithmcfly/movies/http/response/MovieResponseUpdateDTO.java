@@ -1,15 +1,14 @@
-package sithmcfly.movies.DTO;
+package sithmcfly.movies.http.response;
 
-public class MovieDTO {
+public class MovieResponseUpdateDTO {
 
-    private String title;
+       private String title;
     private String director;
     private String description;
     private int year;
-    private double rating;
     private String imageUrl;
 
-    //GETTERS & SETTERS
+    // GETTERS & SETTERS
     public String getTitle() {
         return title;
     }
@@ -34,30 +33,23 @@ public class MovieDTO {
     public void setYear(int year) {
         this.year = year;
     }
-    public double getRating() {
-        return rating;
-    }
-    public void setRating(double rating) {
-        this.rating = rating;
-    }
     public String getImageUrl() {
         return imageUrl;
     }
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
-    
 
-    //CONSTRUCTORS
-    public MovieDTO(String title, String director, String description, int year, double rating, String imageUrl) {
+    // CONSTRUCTORS
+    public MovieResponseUpdateDTO(String title, String director, String description, int year, String imageUrl) {
         this.title = title;
         this.director = director;
         this.description = description;
         this.year = year;
-        this.rating = rating;
         this.imageUrl = imageUrl;
     }
 
-    public MovieDTO() {
+    public MovieResponseUpdateDTO() {
     }
+
 }

@@ -1,6 +1,5 @@
 package sithmcfly.movies.service;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -10,9 +9,11 @@ import sithmcfly.movies.DTO.UserDTO;
 import sithmcfly.movies.client.UserClient;
 import sithmcfly.movies.entities.Movie;
 import sithmcfly.movies.exception.MovieNotFoundException;
-import sithmcfly.movies.http.request.MovieCreateRequestDTO;
+import sithmcfly.movies.http.request.MovieRequestDTO;
 import sithmcfly.movies.http.request.VoteRequest;
 import sithmcfly.movies.http.response.UsersByMovieResponse;
+import sithmcfly.movies.http.response.MovieResponseCreateDTO;
+import sithmcfly.movies.http.response.MovieResponseUpdateDTO;
 import sithmcfly.movies.http.response.VoteResponse;
 import sithmcfly.movies.mappers.MovieMapper;
 import sithmcfly.movies.persistence.MovieRepository;
@@ -45,11 +46,33 @@ public class ImpMovieService implements IMovieService{
     }
 
     @Override
-    public Movie createMovie(MovieCreateRequestDTO movie) {
+    public MovieResponseCreateDTO createMovie(MovieRequestDTO movieCreate) {
         
-        
+        Movie movie = new Movie();
+        movie.setTitle(movieCreate.getTitle());
+        movie.setDirector(movieCreate.getDirector());
+        movie.setDescription(movieCreate.getDescription());
+        movie.setYear(movieCreate.getYear());
+        movie.setImageUrl(movieCreate.getImageUrl());
 
-        return movieRepository.save(movie);
+        movieRepository.save(movie);
+
+        return MovieMapper.toCreateResponseDTO(movie);
+    }
+
+    @Override
+    public MovieResponseUpdateDTO editMovie(MovieRequestDTO updatedMovie, Long id) {
+        Movie movie = movieRepository.findById(id)
+        .orElseThrow(() -> new MovieNotFoundException(id));
+
+        movie.setTitle(updatedMovie.getTitle());
+        movie.setDescription(updatedMovie.getDescription());
+        movie.setDirector(updatedMovie.getDirector());
+        movie.setYear(updatedMovie.getYear());
+        movie.setImageUrl(updatedMovie.getImageUrl());
+        // Debemos estudiar si cambiar la puntuación de la película
+
+        return MovieMapper.toUpdateResponseDTO(movie);
     }
 
     @Override
@@ -61,25 +84,11 @@ public class ImpMovieService implements IMovieService{
         movieRepository.delete(movie);   
     }
 
-    @Override
-    public Movie editMovie(Long id, Movie updatedMovie) {
-        Movie movie = movieRepository.findById(id)
-        .orElseThrow(() -> new MovieNotFoundException(id));
-
-        movie.setTitle(updatedMovie.getTitle());
-        movie.setDescription(updatedMovie.getDescription());
-        movie.setDirector(updatedMovie.getDirector());
-        movie.setYear(updatedMovie.getYear());
-        movie.setImageUrl(updatedMovie.getImageUrl());
-        // Debemos estudiar si cambiar la puntuación de la película
-
-        return movie; //JPA va a hacer la actualización auto
-    }
 
 
     // FUERA DEL CRUD
     @Override
-    public VoteResponse voteMovie(Long id, VoteRequest voteRequest) {
+    public VoteResponse voteMovie(VoteRequest voteRequest, Long id) {
         // Encontrar la película
         Movie movie = movieRepository.findById(id)
         .orElseThrow(() -> new MovieNotFoundException(id));
