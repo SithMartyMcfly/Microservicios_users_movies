@@ -7,8 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import sithmcfly.movies.DTO.MovieDTO;
 import sithmcfly.movies.entities.Movie;
+import sithmcfly.movies.http.request.MovieRequestDTO;
 import sithmcfly.movies.http.request.VoteRequest;
+import sithmcfly.movies.http.response.MovieResponseCreateDTO;
+import sithmcfly.movies.http.response.MovieResponseUpdateDTO;
 import sithmcfly.movies.http.response.VoteResponse;
 import sithmcfly.movies.service.ImpMovieService;
 
@@ -36,7 +40,7 @@ public class MovieController {
     }
 
     @GetMapping //Atiende todas las peticiones que vayan por GET  
-    public ResponseEntity<List<Movie>> getAllMovies() {
+    public ResponseEntity<List<MovieDTO>> getAllMovies() {
         return ResponseEntity.ok(impMovieService.findAll());
     }
 
@@ -45,15 +49,15 @@ public class MovieController {
     @GetMapping("/{id}") /*Hay que diferenciar los GET, y esta le damos un path diferente
                         tenemos que anotarlo en los parametros del método que le diremos que
                         por la URI vendrá el parametro del método*/
-    public ResponseEntity<Movie> getMovieById (@PathVariable Long id) {
+    public ResponseEntity<MovieDTO> getMovieById (@PathVariable Long id) {
 
         return ResponseEntity.ok(impMovieService.findById(id));
     }
 
 
     @PostMapping
-    public ResponseEntity<Movie> createMovie (@RequestBody Movie movie) {
-        Movie createdMovie = impMovieService.createMovie(movie);
+    public ResponseEntity<MovieResponseCreateDTO> createMovie (@RequestBody MovieRequestDTO movie) {
+        MovieResponseCreateDTO createdMovie = impMovieService.createMovie(movie);
         return ResponseEntity
                 // Devolvemos el estado
                 .status(HttpStatus.CREATED)
@@ -72,10 +76,10 @@ public class MovieController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Movie> editMovie (@PathVariable Long id, @RequestBody Movie updatedMovie){
+    public ResponseEntity<MovieResponseUpdateDTO> editMovie (@PathVariable Long id, @RequestBody MovieRequestDTO updatedMovie){
         
         return ResponseEntity.status(HttpStatus.OK)
-                .body(impMovieService.editMovie(id, updatedMovie));
+                .body(impMovieService.editMovie(updatedMovie, id));
     }
 
 
@@ -83,7 +87,7 @@ public class MovieController {
     public ResponseEntity<VoteResponse> voteMovie(@PathVariable Long id, @RequestBody VoteRequest voteRequest) {
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(impMovieService.voteMovie(id, voteRequest));
+                .body(impMovieService.voteMovie(voteRequest, id));
     }
 
     @GetMapping("/movie/{idMovie}/users")
