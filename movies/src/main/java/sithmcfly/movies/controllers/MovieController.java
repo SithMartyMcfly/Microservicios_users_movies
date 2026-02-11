@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import sithmcfly.movies.DTO.MovieDTO;
 import sithmcfly.movies.entities.Movie;
 import sithmcfly.movies.http.request.MovieRequestDTO;
@@ -56,7 +57,7 @@ public class MovieController {
 
 
     @PostMapping
-    public ResponseEntity<MovieResponseCreateDTO> createMovie (@RequestBody MovieRequestDTO movie) {
+    public ResponseEntity<MovieResponseCreateDTO> createMovie (@Valid @RequestBody MovieRequestDTO movie) {
         MovieResponseCreateDTO createdMovie = impMovieService.createMovie(movie);
         return ResponseEntity
                 // Devolvemos el estado
@@ -76,7 +77,7 @@ public class MovieController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<MovieResponseUpdateDTO> editMovie (@PathVariable Long id, @RequestBody MovieRequestDTO updatedMovie){
+    public ResponseEntity<MovieResponseUpdateDTO> editMovie (@PathVariable Long id, @Valid @RequestBody MovieRequestDTO updatedMovie){
         
         return ResponseEntity.status(HttpStatus.OK)
                 .body(impMovieService.editMovie(updatedMovie, id));

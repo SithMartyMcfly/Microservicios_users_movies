@@ -1,6 +1,4 @@
 package sithmcfly.movies.service;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,46 +48,25 @@ public class ImpMovieService implements IMovieService{
     @Override
     public MovieResponseCreateDTO createMovie(MovieRequestDTO movieCreate) {
         
-        Movie movie = new Movie();
-        movie.setTitle(movieCreate.getTitle());
-        movie.setDirector(movieCreate.getDirector());
-        movie.setDescription(movieCreate.getDescription());
-        movie.setYear(movieCreate.getYear());
-        movie.setImageUrl(movieCreate.getImageUrl());
+        Movie movie = MovieMapper.toEntity(movieCreate);
 
         movieRepository.save(movie);
 
-        return MovieMapper.toCreateResponseDTO(movie);
+        return MovieMapper.toMovieCreateResponseDTO(movie);
     }
 
     @Override
     public MovieResponseUpdateDTO editMovie(MovieRequestDTO request, Long id) {
         Movie movie = movieRepository.findById(id)
         .orElseThrow(() -> new MovieNotFoundException(id));
-
-        List<String> errorList = new ArrayList<>();
-
-        if(request.getTitle()== null || request.getTitle().isBlank())
-            errorList.add("El campo título no puede estar vacío");
-
-        if(request.getDirector()== null || request.getDirector().isBlank())
-            errorList.add("El campo director no puede estar vacío");
-
-        if(request.getYear()>LocalDate.now().getYear() || request.getYear()<1888)
-            errorList.add("El campo titulo no puede estar vacío");
-
-        if(request.getTitle()== null || request.getTitle().isBlank())
-            errorList.add("El campo titulo no puede estar vacío");
-        
-        if(request.getTitle()== null || request.getTitle().isBlank())
-            errorList.add("El campo titulo no puede estar vacío");
         
         movie.setTitle(request.getTitle());
         movie.setDescription(request.getDescription());
         movie.setDirector(request.getDirector());
         movie.setYear(request.getYear());
         movie.setImageUrl(request.getImageUrl());
-        // Debemos estudiar si cambiar la puntuación de la película
+
+        movieRepository.save(movie);
 
         return MovieMapper.toUpdateResponseDTO(movie);
     }
