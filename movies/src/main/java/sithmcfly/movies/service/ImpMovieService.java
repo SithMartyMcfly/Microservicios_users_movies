@@ -5,13 +5,13 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import sithmcfly.movies.DTO.MovieDTO;
-import sithmcfly.movies.DTO.UserDTO;
-import sithmcfly.movies.client.UserClient;
+//import sithmcfly.movies.DTO.UserDTO;
+//import sithmcfly.movies.client.UserClient;
 import sithmcfly.movies.entities.Movie;
 import sithmcfly.movies.exception.MovieNotFoundException;
 import sithmcfly.movies.http.request.MovieRequestDTO;
 import sithmcfly.movies.http.request.VoteRequest;
-import sithmcfly.movies.http.response.UsersByMovieResponse;
+//import sithmcfly.movies.http.response.UsersByMovieResponse;
 import sithmcfly.movies.http.response.MovieResponseCreateDTO;
 import sithmcfly.movies.http.response.MovieResponseUpdateDTO;
 import sithmcfly.movies.http.response.VoteResponse;
@@ -21,12 +21,12 @@ import sithmcfly.movies.persistence.MovieRepository;
 @Service
 public class ImpMovieService implements IMovieService{
     private MovieRepository movieRepository;
-    private UserClient userClient;
+    //private UserClient userClient;
 
     //Inyectamos por constructor para facilitar el testeo y buenas prácticas
-    public ImpMovieService (MovieRepository movieRepository, UserClient userClient ){
+    public ImpMovieService (MovieRepository movieRepository){
         this.movieRepository = movieRepository;
-        this.userClient = userClient;
+        //this.userClient = userClient;
     }
 
     @Override
@@ -44,6 +44,7 @@ public class ImpMovieService implements IMovieService{
 
         return MovieMapper.toResponseDTO(movie);
     }
+
 
     @Override
     public MovieResponseCreateDTO createMovie(MovieRequestDTO movieCreate) {
@@ -101,7 +102,7 @@ public class ImpMovieService implements IMovieService{
     }
 
     //Método consulta microservicio Users
-    @Override
+    /*@Override
     public UsersByMovieResponse findUsersByMovie(Long idMovie) {
         // Consultamos la Movie
         Movie movie = movieRepository
@@ -117,7 +118,7 @@ public class ImpMovieService implements IMovieService{
         response.setUserList(userDTOList);
 
         return response;
-    }
+    }*/
 
     
 

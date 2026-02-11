@@ -7,6 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import sithmcfly.movies.DTO.MovieDTO;
 import sithmcfly.movies.entities.Movie;
@@ -24,11 +28,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+//import org.springframework.web.bind.annotation.RequestParam;
 
 
 
 
+@Tag(name = "Movies", description = "Operaciones CRUD de Películas y puntuación de películas")
 @CrossOrigin // Para poder usar los endpoints con aplicaciones externas (Front u otras apps)
 @RestController // Indica que va a ser una API REST
 @RequestMapping("api/movies") // Identifica la ruta para usar los recursos
@@ -40,13 +45,19 @@ public class MovieController {
         this.impMovieService = impMovieService;
     }
 
+    @Operation(summary = "Listar Películas", description = "Encuentra un listado de todas las películas en el sistema")
+    @ApiResponse(responseCode = "200", description = "Listado de usuarios encontrado")
     @GetMapping //Atiende todas las peticiones que vayan por GET  
     public ResponseEntity<List<MovieDTO>> getAllMovies() {
         return ResponseEntity.ok(impMovieService.findAll());
     }
 
   
-
+    @Operation(summary = "Encuentra una película", description = "Encuentra una película pasando su ID")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description ="Película encontrada correctamente"),
+        @ApiResponse(responseCode = "404", description = "La película no fue encontrada")
+    })
     @GetMapping("/{id}") /*Hay que diferenciar los GET, y esta le damos un path diferente
                         tenemos que anotarlo en los parametros del método que le diremos que
                         por la URI vendrá el parametro del método*/
@@ -55,7 +66,11 @@ public class MovieController {
         return ResponseEntity.ok(impMovieService.findById(id));
     }
 
-
+    @Operation(summary = "Crea una película", description = "Crea un nuevo usuario con validaciones propias de MovieRequestDTO")
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Película creada correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos incorrectos o incompletos")
+    })
     @PostMapping
     public ResponseEntity<MovieResponseCreateDTO> createMovie (@Valid @RequestBody MovieRequestDTO movie) {
         MovieResponseCreateDTO createdMovie = impMovieService.createMovie(movie);
@@ -66,6 +81,11 @@ public class MovieController {
                 .body(createdMovie);
     }
 
+    @Operation(summary = "Borrar una película", description = "Borra una película a partir de una Id")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Película borrada correctamente"),
+        @ApiResponse(responseCode = "404", description = "Id película no existe")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Movie> deleteMovie (@PathVariable Long id) {
         impMovieService.deleteMovie(id);
@@ -75,7 +95,11 @@ public class MovieController {
                 .build();
     }
 
-
+    @Operation(summary = "Actualizar película", description = "Permite actualizar una película pasandole un MovieRequestDTO")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Película actualizada correctamente"),
+        @ApiResponse(responseCode = "404", description = "Película no encontrada")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<MovieResponseUpdateDTO> editMovie (@PathVariable Long id, @Valid @RequestBody MovieRequestDTO updatedMovie){
         
@@ -91,9 +115,9 @@ public class MovieController {
                 .body(impMovieService.voteMovie(voteRequest, id));
     }
 
-    @GetMapping("/movie/{idMovie}/users")
+    /*@GetMapping("/movie/{idMovie}/users")
     public ResponseEntity<?> findUsersById(@RequestParam Long idMovie) {
         return ResponseEntity.ok(impMovieService.findUsersByMovie(idMovie));
-    }
+    }*/
     
 }

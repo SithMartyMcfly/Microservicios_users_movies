@@ -7,7 +7,7 @@ import sithmcfly.movies.http.request.MovieRequestDTO;
 import sithmcfly.movies.http.request.VoteRequest;
 import sithmcfly.movies.http.response.MovieResponseCreateDTO;
 import sithmcfly.movies.http.response.MovieResponseUpdateDTO;
-import sithmcfly.movies.http.response.UsersByMovieResponse;
+//import sithmcfly.movies.http.response.UsersByMovieResponse;
 import sithmcfly.movies.http.response.VoteResponse;
 
 public interface IMovieService {
@@ -18,5 +18,5 @@ public interface IMovieService {
     void deleteMovie (Long id);
     VoteResponse voteMovie (VoteRequest voteRequest, Long id);
     //Con este método consultamos los Usuarios que vieron la Movie
-    UsersByMovieResponse findUsersByMovie (Long idMovie);
+    //UsersByMovieResponse findUsersByMovie (Long idMovie);
 }
