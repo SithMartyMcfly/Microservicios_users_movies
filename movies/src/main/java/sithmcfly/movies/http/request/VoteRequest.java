@@ -1,11 +1,12 @@
 package sithmcfly.movies.http.request;
 
-public class VoteRequest {
-    private int rating;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
-    public VoteRequest (int rating){
-        this.rating = rating;
-    }
+public class VoteRequest {
+    @Min(value = 1, message = "La nota no puede ser inferior a 1")
+    @Max(value = 10, message = "La nota no puede ser superior a 10")
+    private int rating;
     
     public int getRating() {
         return rating;
@@ -14,4 +15,14 @@ public class VoteRequest {
     public void setRating(int rating) {
         this.rating = rating;
     }
+
+    public VoteRequest(int rating) {
+        this.rating = rating;
+    }
+
+    public VoteRequest() {
+    }
+
+    
 }
+

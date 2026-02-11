@@ -108,8 +108,14 @@ public class MovieController {
     }
 
 
+    @Operation( summary = "Vota película", 
+                description = "Vota una pelicula y hace un cálculo de su media con la nueva nota, devuelve el número de votos y la media de notas")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Película votada correctamente"),
+        @ApiResponse(responseCode = "404", description = "La película no fue encontrada")
+    })
     @PutMapping("/vote/{id}")
-    public ResponseEntity<VoteResponse> voteMovie(@PathVariable Long id, @RequestBody VoteRequest voteRequest) {
+    public ResponseEntity<VoteResponse> voteMovie(@PathVariable Long id, @Valid @RequestBody VoteRequest voteRequest) {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(impMovieService.voteMovie(voteRequest, id));

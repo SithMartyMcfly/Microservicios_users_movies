@@ -90,10 +90,10 @@ public class ImpMovieService implements IMovieService{
         Movie movie = movieRepository.findById(id)
         .orElseThrow(() -> new MovieNotFoundException(id));
         // Actualizar puntuación
-        int movieVotesPreviuous = movie.getVotes();
+        int movieVotesPrevious = movie.getVotes();
         int movieVotes = movie.getVotes()+1;
 
-        double newRating = (movieVotesPreviuous * movie.getRating() + voteRequest.getRating())/movieVotes;
+        double newRating = (movieVotesPrevious * movie.getRating() + voteRequest.getRating())/movieVotes;
         movie.setVotes(movieVotes);
         movie.setRating(newRating);
         movieRepository.save(movie);
