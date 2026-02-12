@@ -49,7 +49,7 @@ public class MovieController {
     @ApiResponse(responseCode = "200", description = "Listado de usuarios encontrado")
     @GetMapping //Atiende todas las peticiones que vayan por GET  
     public ResponseEntity<List<MovieDTO>> getAllMovies() {
-        return ResponseEntity.ok(impMovieService.findAll());
+        return ResponseEntity.ok(impMovieService.getAllMovies());
     }
 
   
@@ -63,7 +63,7 @@ public class MovieController {
                         por la URI vendrá el parametro del método*/
     public ResponseEntity<MovieDTO> getMovieById (@PathVariable Long id) {
 
-        return ResponseEntity.ok(impMovieService.findById(id));
+        return ResponseEntity.ok(impMovieService.getMovie(id));
     }
 
     @Operation(summary = "Crea una película", description = "Crea un nuevo usuario con validaciones propias de MovieRequestDTO")

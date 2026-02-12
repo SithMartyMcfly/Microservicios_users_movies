@@ -11,8 +11,8 @@ import sithmcfly.movies.http.response.MovieResponseUpdateDTO;
 import sithmcfly.movies.http.response.VoteResponse;
 
 public interface IMovieService {
-    List<MovieDTO> findAll();
-    MovieDTO findById(Long id);
+    List<MovieDTO> getAllMovies();
+    MovieDTO getMovie(Long id);
     MovieResponseCreateDTO createMovie(MovieRequestDTO movie);
     MovieResponseUpdateDTO editMovie(MovieRequestDTO movieUpdate, Long id);
     void deleteMovie (Long id);

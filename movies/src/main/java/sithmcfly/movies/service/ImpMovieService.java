@@ -30,7 +30,7 @@ public class ImpMovieService implements IMovieService{
     }
 
     @Override
-    public List<MovieDTO> findAll() {
+    public List<MovieDTO> getAllMovies() {
        List<Movie> movieList = movieRepository.findAll();
        return movieList.stream()
                 .map(MovieMapper::toResponseDTO)
@@ -38,7 +38,7 @@ public class ImpMovieService implements IMovieService{
     }
 
     @Override
-    public MovieDTO findById(Long id) {
+    public MovieDTO getMovie(Long id) {
         Movie movie = movieRepository.findById(id)
         .orElseThrow(() -> new MovieNotFoundException(id));
 
