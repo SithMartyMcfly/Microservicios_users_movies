@@ -1,7 +1,8 @@
-package SithMcfly.movies;
+package sithmcfly.movies.service;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -14,8 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import sithmcfly.movies.DTO.MovieDTO;
 import sithmcfly.movies.entities.Movie;
+import sithmcfly.movies.exception.MovieNotFoundException;
 import sithmcfly.movies.persistence.MovieRepository;
-import sithmcfly.movies.service.ImpMovieService;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -53,12 +54,16 @@ class MoviesServiceTests {
 		assertEquals("TestDescription", result.getDescription());
 		assertEquals(8.0, result.getRating());
 		assertEquals("TestUrl", result.getImageUrl());
-
-
-
-
-
 	}
+
+	// Test salta excepción al no encontrar Movie
+	@Test
+	void getMovieThrowsException_whenMovieDoesNotExists(){
+		when(movieRepository.findById(68L)).thenReturn(Optional.empty());
+		assertThrows(MovieNotFoundException.class, ()->movieService.getMovie(68L));
+	}
+
+
 
 	
 
