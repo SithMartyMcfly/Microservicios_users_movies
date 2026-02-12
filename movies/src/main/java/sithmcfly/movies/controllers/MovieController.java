@@ -61,7 +61,7 @@ public class MovieController {
     @GetMapping("/{id}") /*Hay que diferenciar los GET, y esta le damos un path diferente
                         tenemos que anotarlo en los parametros del método que le diremos que
                         por la URI vendrá el parametro del método*/
-    public ResponseEntity<MovieDTO> getMovieById (@PathVariable Long id) {
+    public ResponseEntity<MovieDTO> getMovie (@PathVariable Long id) {
 
         return ResponseEntity.ok(impMovieService.getMovie(id));
     }
