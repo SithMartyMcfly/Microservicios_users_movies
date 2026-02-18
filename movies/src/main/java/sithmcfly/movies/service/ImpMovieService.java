@@ -89,13 +89,14 @@ public class ImpMovieService implements IMovieService{
         // Actualizar puntuación
         int movieVotesPrevious = movie.getVotes();
         int movieVotes = movie.getVotes()+1;
+        String movieTitle = movie.getTitle();
 
         double newRating = (movieVotesPrevious * movie.getRating() + voteRequest.getRating())/movieVotes;
         movie.setVotes(movieVotes);
         movie.setRating(newRating);
         movieRepository.save(movie);
 
-        return new VoteResponse(movieVotes, newRating);
+        return new VoteResponse(movieVotes, newRating, movieTitle);
     }
 
     //Método consulta microservicio Users

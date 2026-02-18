@@ -3,10 +3,12 @@ package sithmcfly.movies.http.response;
 public class VoteResponse {
     private int vote;
     private double rating;
+    private String title;
 
-    public VoteResponse (int vote, double rating){
+    public VoteResponse (int vote, double rating, String title){
         this.vote = vote;
         this.rating = rating;
+        this.title = title;
     }
 
     public int getVote() {
@@ -24,6 +26,10 @@ public class VoteResponse {
     public void setRating(double rating) {
         this.rating = rating;
     }
+
+    public String getTitle() { return title; }
+
+    public void setTitle (String title) { this.title = title; }
 
     
 }
