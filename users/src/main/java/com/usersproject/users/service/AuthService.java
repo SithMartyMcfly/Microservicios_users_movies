@@ -36,7 +36,7 @@ public class AuthService {
         // Buscamos el usuario cuyo mail coincida
         // con lo que envía la request
         User user =  userRepository.findByEmail(request.getEmail())
-            .orElseThrow(()-> new UnauthorizedException()); 
+            .orElseThrow(UnauthorizedException::new);
 
         String passwordHashed = user.getPassword();
         char[] passwordChars = request.getPassword().toCharArray();

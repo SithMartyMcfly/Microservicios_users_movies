@@ -9,9 +9,9 @@ import com.usersproject.users.http.request.UserUpdateRequestDTO;
 public interface IUserservice {
 
     UserDTO createUser (UserCreateRequestDTO request);
-    UserDTO updateUser (UserUpdateRequestDTO request, Long id);
-    void deleteUser (Long id);
-    UserDTO getUser (Long id);
+    UserDTO updateUser (UserUpdateRequestDTO request, long id);
+    void deleteUser (long id);
+    UserDTO getUser (long id);
     List<UserDTO> getAllUsers ();
     //Conexion con microservicio Movie
     //List<UserDTO> getUsersByMovie (Long idMovie);

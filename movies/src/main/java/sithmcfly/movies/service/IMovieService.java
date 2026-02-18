@@ -12,11 +12,11 @@ import sithmcfly.movies.http.response.VoteResponse;
 
 public interface IMovieService {
     List<MovieDTO> getAllMovies();
-    MovieDTO getMovie(Long id);
+    MovieDTO getMovie(long id);
     MovieResponseCreateDTO createMovie(MovieRequestDTO movie);
-    MovieResponseUpdateDTO editMovie(MovieRequestDTO movieUpdate, Long id);
-    void deleteMovie (Long id);
-    VoteResponse voteMovie (VoteRequest voteRequest, Long id);
+    MovieResponseUpdateDTO editMovie(MovieRequestDTO movieUpdate, long id);
+    void deleteMovie (long id);
+    VoteResponse voteMovie (VoteRequest voteRequest, long id);
     //Con este método consultamos los Usuarios que vieron la Movie
     //UsersByMovieResponse findUsersByMovie (Long idMovie);
 }

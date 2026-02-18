@@ -16,16 +16,14 @@ import com.usersproject.users.http.request.UserUpdateRequestDTO;
 import com.usersproject.users.mappers.UserMapper;
 import com.usersproject.users.persistence.UserRepository;
 import com.usersproject.users.utils.HashPassword;
-import com.usersproject.users.utils.JWTUtil;
 import com.usersproject.users.utils.Validator;
 
-import jakarta.persistence.EntityManager;
 
 @Service
 public class ImpUserService implements IUserservice {
 
     private final UserRepository userRepository;
-    public ImpUserService (UserRepository userRepository, JWTUtil jwtUtil, EntityManager entityManager){
+    public ImpUserService (UserRepository userRepository){
         this.userRepository = userRepository;
     }
     
@@ -62,9 +60,9 @@ public class ImpUserService implements IUserservice {
     }
 
     @Override
-    public UserDTO updateUser(UserUpdateRequestDTO request, Long id) {
+    public UserDTO updateUser(UserUpdateRequestDTO request, long id) {
         User user = userRepository.findById(id)
-                    .orElseThrow(()-> new UserNotFoundException(id.toString()));
+                    .orElseThrow(()-> new UserNotFoundException(String.valueOf(id)));
 
             List<String> errorList = new ArrayList<>();
         
@@ -98,17 +96,17 @@ public class ImpUserService implements IUserservice {
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void deleteUser(long id) {
         User user = userRepository.findById(id)
                     // Pasamos el id a String para usar la excepcion que recibe String
-                    .orElseThrow(() -> new UserNotFoundException(id.toString()));
+                    .orElseThrow(() -> new UserNotFoundException(String.valueOf(id)));
         userRepository.delete(user);
     }
 
     @Override
-    public UserDTO getUser(Long id) {
+    public UserDTO getUser(long id) {
         User user = userRepository.findById(id)
-                    .orElseThrow(() -> new UserNotFoundException(id.toString()));
+                    .orElseThrow(() -> new UserNotFoundException(String.valueOf(id)));
         return UserMapper.toResponseDTO(user);
     }
 
@@ -118,14 +116,13 @@ public class ImpUserService implements IUserservice {
         List<User> userList = userRepository.findAll();
 
         // Paso la lista a Stream para trabajar con ella
-        List<UserDTO> userMappedList = userList
+        // retorno la List
+        return userList
                 .stream()
         // Mapeo los objetos de la lista a DTO's
                 .map(UserMapper::toResponseDTO)
         // todo lo que he mapeado lo hago LIST
-                .collect(Collectors.toList()); 
-        // retorno la List
-        return userMappedList;
+                .collect(Collectors.toList());
     }
 
 

@@ -1,5 +1,9 @@
 package sithmcfly.movies.mappers;
 
+
+import org.springframework.lang.NonNull;
+
+import jakarta.validation.constraints.NotNull;
 import sithmcfly.movies.DTO.MovieDTO;
 import sithmcfly.movies.entities.Movie;
 import sithmcfly.movies.http.request.MovieRequestDTO;
@@ -10,7 +14,7 @@ import sithmcfly.movies.http.response.MovieResponseUpdateDTO;
 public class MovieMapper {
     
     // Mapea a MovieDTO
-    public static MovieDTO toResponseDTO (Movie movie){
+    public static MovieDTO toResponseDTO (@NotNull Movie movie){
         MovieDTO dto = new MovieDTO();
 
         dto.setTitle(movie.getTitle());
@@ -24,7 +28,7 @@ public class MovieMapper {
     }
 
     // DTO a Entity
-    public static Movie toEntity (MovieRequestDTO movieResponse){
+    public static Movie toEntity (@NonNull MovieRequestDTO movieResponse){
         Movie movie = new Movie();
         movie.setTitle(movieResponse.getTitle());
         movie.setDirector(movieResponse.getDirector());
@@ -36,7 +40,7 @@ public class MovieMapper {
     }
 
     // Mapea a MovieResponseCreateDTO
-    public static MovieResponseCreateDTO toMovieCreateResponseDTO (Movie movie){
+    public static MovieResponseCreateDTO toMovieCreateResponseDTO (@NonNull Movie movie){
         MovieResponseCreateDTO dto = new MovieResponseCreateDTO();
 
         dto.setTitle(movie.getTitle());
@@ -49,7 +53,7 @@ public class MovieMapper {
     }
 
     // Mapea a MovieResponseUpdateDTO
-    public static MovieResponseUpdateDTO toUpdateResponseDTO (Movie movie){
+    public static MovieResponseUpdateDTO toUpdateResponseDTO (@NonNull Movie movie){
         MovieResponseUpdateDTO dto = new MovieResponseUpdateDTO();
 
         dto.setTitle(movie.getTitle());

@@ -38,7 +38,7 @@ public class ImpMovieService implements IMovieService{
     }
 
     @Override
-    public MovieDTO getMovie(Long id) {
+    public MovieDTO getMovie(long id) {
         Movie movie = movieRepository.findById(id)
         .orElseThrow(() -> new MovieNotFoundException(id));
 
@@ -48,16 +48,13 @@ public class ImpMovieService implements IMovieService{
 
     @Override
     public MovieResponseCreateDTO createMovie(MovieRequestDTO movieCreate) {
-        
         Movie movie = MovieMapper.toEntity(movieCreate);
-
         movieRepository.save(movie);
-
         return MovieMapper.toMovieCreateResponseDTO(movie);
     }
 
     @Override
-    public MovieResponseUpdateDTO editMovie(MovieRequestDTO request, Long id) {
+    public MovieResponseUpdateDTO editMovie(MovieRequestDTO request, long id) {
         Movie movie = movieRepository.findById(id)
         .orElseThrow(() -> new MovieNotFoundException(id));
         
@@ -73,7 +70,7 @@ public class ImpMovieService implements IMovieService{
     }
 
     @Override
-    public void deleteMovie(Long id) {
+    public void deleteMovie(long id) {
         //Comprobamos que exista la pelicula con id
         Movie movie = movieRepository.findById(id)
         .orElseThrow(() -> new MovieNotFoundException(id));
@@ -85,7 +82,7 @@ public class ImpMovieService implements IMovieService{
 
     // FUERA DEL CRUD
     @Override
-    public VoteResponse voteMovie(VoteRequest voteRequest, Long id) {
+    public VoteResponse voteMovie(VoteRequest voteRequest, long id) {
         // Encontrar la película
         Movie movie = movieRepository.findById(id)
         .orElseThrow(() -> new MovieNotFoundException(id));
