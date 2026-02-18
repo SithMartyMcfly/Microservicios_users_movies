@@ -20,7 +20,7 @@ import sithmcfly.movies.persistence.MovieRepository;
 
 @Service
 public class ImpMovieService implements IMovieService{
-    private MovieRepository movieRepository;
+    private final MovieRepository movieRepository;
     //private UserClient userClient;
 
     //Inyectamos por constructor para facilitar el testeo y buenas prácticas
