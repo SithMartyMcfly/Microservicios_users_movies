@@ -22,8 +22,10 @@ import sithmcfly.movies.DTO.MovieDTO;
 import sithmcfly.movies.entities.Movie;
 import sithmcfly.movies.exception.MovieNotFoundException;
 import sithmcfly.movies.http.request.MovieRequestDTO;
+import sithmcfly.movies.http.request.VoteRequest;
 import sithmcfly.movies.http.response.MovieResponseCreateDTO;
 import sithmcfly.movies.http.response.MovieResponseUpdateDTO;
+import sithmcfly.movies.http.response.VoteResponse;
 import sithmcfly.movies.mappers.MovieMapper;
 import sithmcfly.movies.persistence.MovieRepository;
 
@@ -263,6 +265,51 @@ class MoviesServiceTests {
         verify(movieRepository, times(1)).findById(68L);
         verify(movieRepository, never()).save(any());
 
+    }
+
+    @Test
+    void voteMovie_movieExistsAndReturnVoteResponse(){
+        // Arrange preparación de datos
+        // Película que vamos a votar
+        Movie movie = new Movie();
+        movie.setId(1L);
+        movie.setTitle("MovieToVote");
+        movie.setVotes(1);      //Valor anterior al voto
+        movie.setRating(8.0);   //Valor anterior al voto
+
+        // VoteRequest
+        VoteRequest voteRequest = new VoteRequest();
+        voteRequest.setRating(10.0);
+
+        // Mock de movie existe
+        when(movieRepository.findById(1L)).thenReturn(Optional.of(movie));
+
+        // Mock salvar movie
+        when(movieRepository.save(movie)).thenReturn(movie);
+
+        // Cálculo de votación esperado
+        int expectedVotes = 2;
+        double expectedRating = 9.0;
+
+        // Act ejecutamos el metodo real
+        VoteResponse result = movieService.voteMovie(voteRequest, 1L);
+
+        // Assert comprobamos valores
+        assertEquals(expectedVotes, result.getVote());
+        assertEquals(expectedRating, result.getRating());
+
+        // Verificación que se llamó a save()
+        verify(movieRepository, times(1)).save(movie);
+    }
+
+    @Test
+    void voteMovie_throwsMovieNotFoundException_whenMovieNotExists(){
+        when(movieRepository.findById(68L)).thenReturn(Optional.empty());
+
+        assertThrows(MovieNotFoundException.class, ()->movieService.voteMovie(new VoteRequest(), 68L));
+
+        verify(movieRepository, times(1)).findById(68L);
+        verify(movieRepository, never()).save(any());
     }
 
 }
