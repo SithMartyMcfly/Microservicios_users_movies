@@ -59,7 +59,7 @@ public class MovieController {
         @ApiResponse(responseCode = "404", description = "La película no fue encontrada")
     })
     @GetMapping("/{id}") /*Hay que diferenciar los GET, y esta le damos un path diferente
-                        tenemos que anotarlo en los parametros del método que le diremos que
+                        tenemos que anotarlo en los parámetros del método que le diremos que
                         por la URI vendrá el parametro del método*/
     public ResponseEntity<MovieDTO> getMovie (@PathVariable Long id) {
 

@@ -1,12 +1,11 @@
-package com.usersproject.users.security;
-
-import java.util.Collections;
+package sithmcfly.movies.security;
 
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.oauth2.jwt.Jwt;
 
-import org.springframework.lang.NonNull;
+import java.util.Collections;
 
 /* En resumen:
  *
@@ -23,9 +22,9 @@ public class UserJwtConverter implements Converter<Jwt, UsernamePasswordAuthenti
     @Override
     @NonNull
     public UsernamePasswordAuthenticationToken convert (@NonNull Jwt jwt){
-        // Recuperamos id que trae JWT
+        // Recupera el id que trae JWT
         String userId = jwt.getId();
-        // Retornamos el token de autenticación pasandole el parámetro de Id
+        // Retornamos el token de autenticación pasando el parámetro de Id
         return new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
     }  
 }
