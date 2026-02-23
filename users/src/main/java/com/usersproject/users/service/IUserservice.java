@@ -13,7 +13,4 @@ public interface IUserservice {
     void deleteUser (long id);
     UserDTO getUser (long id);
     List<UserDTO> getAllUsers ();
-    //Conexion con microservicio Movie
-    //List<UserDTO> getUsersByMovie (Long idMovie);
-
 }

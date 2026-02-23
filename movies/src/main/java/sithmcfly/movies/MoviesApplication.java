@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@EnableFeignClients
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "sithmcfly.movies")
+@EnableFeignClients(basePackages = "sithmcfly.movies.client")
 public class MoviesApplication {
 
 	public static void main(String[] args) {

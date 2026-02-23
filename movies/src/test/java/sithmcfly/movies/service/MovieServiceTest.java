@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import sithmcfly.movies.DTO.MovieDTO;
+import sithmcfly.movies.client.UserClient;
 import sithmcfly.movies.entities.Movie;
 import sithmcfly.movies.exception.MovieNotFoundException;
 import sithmcfly.movies.http.request.MovieRequestDTO;
@@ -36,6 +37,8 @@ class MoviesServiceTests {
 	@Mock
     // Mock del repositorio
 	private MovieRepository movieRepository;
+    // MOCKEAMOS EL FEIGN CLIENT
+    private UserClient userClient;
     // Servicio que vamos a testear
 	private ImpMovieService movieService;
     // Mock para métodos estáticos del Mapper
@@ -44,8 +47,8 @@ class MoviesServiceTests {
 
     @BeforeEach
     void setup(){
-        // Creamos el servicio real, pero con repo mockeado
-        movieService = new ImpMovieService(movieRepository);
+        // Creamos el servicio real, pero con repo mockeado, AÑADIDO FEIGN CLIENT
+        movieService = new ImpMovieService(movieRepository, userClient);
         // Activamos el mock estático del MovieMapper, podemos realizar llamadas a los Mappers
         movieMapperMock = Mockito.mockStatic(MovieMapper.class);
     }

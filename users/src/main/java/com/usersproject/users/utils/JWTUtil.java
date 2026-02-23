@@ -2,6 +2,7 @@ package com.usersproject.users.utils;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -59,5 +60,15 @@ public class JWTUtil {
     public void setKey(String key) { this.key = key; }
     public void setIssuer(String issuer) { this.issuer = issuer; }
     public void setTtlMillis(long ttlMillis) { this.ttlMillis = ttlMillis; }
+
+    @PostConstruct
+    public void debug() {
+        System.out.println("🔍 JWT CONFIG DEBUG");
+        System.out.println("KEY = " + key);
+        System.out.println("ISSUER = " + issuer);
+        System.out.println("TTL MILLIS = " + ttlMillis);
+    }
+
+
 }
 

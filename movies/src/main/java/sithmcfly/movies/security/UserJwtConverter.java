@@ -24,7 +24,9 @@ public class UserJwtConverter implements Converter<Jwt, UsernamePasswordAuthenti
     public UsernamePasswordAuthenticationToken convert (@NonNull Jwt jwt){
         // Recupera el id que trae JWT
         String userId = jwt.getId();
+        // Guardamos el token de JWT
+        String token = jwt.getTokenValue();
         // Retornamos el token de autenticación pasando el parámetro de Id
-        return new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
+        return new UsernamePasswordAuthenticationToken(userId, token, Collections.emptyList());
     }  
 }

@@ -98,7 +98,7 @@ public class ImpUserService implements IUserservice {
     @Override
     public void deleteUser(long id) {
         User user = userRepository.findById(id)
-                    // Pasamos el id a String para usar la excepcion que recibe String
+                    // Pasamos el id a String para usar la excepción que recibe String
                     .orElseThrow(() -> new UserNotFoundException(String.valueOf(id)));
         userRepository.delete(user);
     }
@@ -125,14 +125,5 @@ public class ImpUserService implements IUserservice {
                 .collect(Collectors.toList());
     }
 
-
-    /*@Override
-    public List<UserDTO> getUsersByMovie(Long idMovie) {
-        List<User> userList = userRepository.getUsersByMovie(idMovie);
-
-        return userList.stream()
-                .map(UserMapper::toResponseDTO)
-                .collect(Collectors.toList());
-    }*/
 
 }

@@ -1,4 +1,5 @@
 package sithmcfly.movies.service;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,6 +8,8 @@ import org.springframework.stereotype.Service;
 import sithmcfly.movies.DTO.MovieDTO;
 //import sithmcfly.movies.DTO.UserDTO;
 //import sithmcfly.movies.client.UserClient;
+import sithmcfly.movies.DTO.UserDTO;
+import sithmcfly.movies.client.UserClient;
 import sithmcfly.movies.entities.Movie;
 import sithmcfly.movies.exception.MovieNotFoundException;
 import sithmcfly.movies.http.request.MovieRequestDTO;
@@ -21,12 +24,12 @@ import sithmcfly.movies.persistence.MovieRepository;
 @Service
 public class ImpMovieService implements IMovieService{
     private final MovieRepository movieRepository;
-    //private UserClient userClient;
+    private final UserClient userClient;
 
     //Inyectamos por constructor para facilitar el testeo y buenas prácticas
-    public ImpMovieService (MovieRepository movieRepository){
+    public ImpMovieService (MovieRepository movieRepository, UserClient userClient){
         this.movieRepository = movieRepository;
-        //this.userClient = userClient;
+        this.userClient = userClient;
     }
 
     @Override
@@ -71,7 +74,7 @@ public class ImpMovieService implements IMovieService{
 
     @Override
     public void deleteMovie(long id) {
-        //Comprobamos que exista la pelicula con id
+        //Comprobamos que existe la película con id
         Movie movie = movieRepository.findById(id)
         .orElseThrow(() -> new MovieNotFoundException(id));
         //Borramos la película que hemos encontrado, borramos por entidad no por id
@@ -99,25 +102,52 @@ public class ImpMovieService implements IMovieService{
         return new VoteResponse(movieVotes, newRating, movieTitle);
     }
 
+    @Override
+    public String userSeeMovie(long idMovie, long idUser) {
+        // Recuperamos la película que vamos a ver
+        Movie movie = movieRepository.findById(idMovie)
+                .orElseThrow(() -> new MovieNotFoundException(idMovie));
+
+        // Inicializamos la lista
+        if (movie.getUsersSaw() == null){
+            movie.setUsersSaw(new ArrayList<>());
+        }
+
+        // Evitamos duplicados en la película
+        if  (movie.getUsersSaw().contains(idUser)){
+            return "El usuario " + idUser + "ya ha marcado como vista la película" + movie.getTitle();
+        }
+        // Añadimos el usuario a la List usersSaw y guardamos cambios
+        movie.getUsersSaw().add(idUser);
+        movieRepository.save(movie);
+        return "El usuario " + idUser + "ha marcado como vista la película " + movie.getTitle();
+    }
+
     //Método consulta microservicio Users
-    /*@Override
-    public UsersByMovieResponse findUsersByMovie(Long idMovie) {
+    @Override
+    public List<UserDTO> findUsersByMovie(Long idMovie) {
         // Consultamos la Movie
         Movie movie = movieRepository
-                    .findById(idMovie)
-                    .orElseThrow(() -> new MovieNotFoundException(idMovie));
-        // Obtenemos los usuarios, inyectando el cliente UserClient
-        List<UserDTO> userDTOList = userClient.findUserByMovie(idMovie);
-        
-        UsersByMovieResponse response = new UsersByMovieResponse();
-
-        response.setMovieName(movie.getTitle());
-        response.setDirector(movie.getDirector());
-        response.setUserList(userDTOList);
-
-        return response;
-    }*/
-
+                .findById(idMovie)
+                .orElseThrow(() -> new MovieNotFoundException(idMovie));
+        // Controlamos que la List esté vacía, por lo tanto, sea nula
+        // en caso de estar vacía inicializamos una List
+        if (movie.getUsersSaw() == null || movie.getUsersSaw().isEmpty()){
+                return new ArrayList<>();
+        }
+        // Obtenemos los usuarios que tenemos guardado en la lista
+        List<Long> usersId = movie.getUsersSaw();
+        // Creamos una Lista de UsersDTO donde guardar cada User
+        List<UserDTO> users = new ArrayList<>();
+        // Iteramos cada id dentro de la lista y los recuperamos en la lista UsersDTO
+        for (Long userId : usersId) {
+            // Usamos el método que tenemos dentro del Feign Client
+            UserDTO user = userClient.getUser(userId);
+            // Añadimos dentro de la lista cada UserDTO
+            users.add(user);
+        }
+        return users;
+    }
     
 
 }

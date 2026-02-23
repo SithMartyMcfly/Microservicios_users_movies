@@ -15,5 +15,5 @@ custom:
   jwt:
    key: ${JWT_KEY}
    issuer: ${JWT_ISSUER}
-   ttMillis: ${JWT_TT_MILLIS}
+   ttlMillis: ${JWT_TT_MILLIS}
 

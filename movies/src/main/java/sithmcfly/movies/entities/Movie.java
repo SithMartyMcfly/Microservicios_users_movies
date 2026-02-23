@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.util.List;
+
 @Entity // Anotacion que dice que es una entidad de la BBDD
 @Table(name = "movies") // Anotación para indicar que mapea la tabla 'movies'
 public class Movie {
@@ -22,6 +24,10 @@ public class Movie {
 
     @Column(name = "image_url")
     private String imageUrl;
+    // Guardamos todos los usuarios que han
+    // visto en una lista por Id de usuario
+
+    private List<Long> usersSaw;
     
     // en caso de que los nombres de las propiedades coincidan con los
     // nombres de los campos de la BBDD no hay que hacer nada
@@ -91,5 +97,29 @@ public class Movie {
     
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public List<Long> getUsersSaw() {
+        return usersSaw;
+    }
+
+    public void setUsersSaw(List<Long> usersSaw) {
+        this.usersSaw = usersSaw;
+    }
+
+    // CONSTRUCTORS
+    public Movie() {
+    }
+
+    public Movie(Long id, String title, String director, String description, int year, int votes, double rating, String imageUrl, List<Long> usersSaw) {
+        this.id = id;
+        this.title = title;
+        this.director = director;
+        this.description = description;
+        this.year = year;
+        this.votes = votes;
+        this.rating = rating;
+        this.imageUrl = imageUrl;
+        this.usersSaw = usersSaw;
     }
 }
