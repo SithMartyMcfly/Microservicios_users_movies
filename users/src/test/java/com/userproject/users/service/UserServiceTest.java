@@ -53,7 +53,7 @@ public class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         // Ejecutamos el metodo
-        UserDTO result = userService.getUser(1L);
+        UserDTO result = userService.getUser(null,1L);
 
         // Comprobamos los resultados del metodo sean iguales al objeto creado
         assertEquals("Antonio", result.getName());
@@ -67,7 +67,7 @@ public class UserServiceTest {
     @Test
     void getUserThrowsException_whenUserDoesNotExists () {
         when(userRepository.findById(68L)).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundException.class, ()->userService.getUser(68L));
+        assertThrows(UserNotFoundException.class, ()->userService.getUser(null,68L));
     }
 
     // TEST UPDATEUSERS

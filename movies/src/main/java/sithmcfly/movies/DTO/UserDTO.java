@@ -3,38 +3,41 @@ package sithmcfly.movies.DTO;
 
 public class UserDTO {
 
-    private String nombre;
-    private String apellido;
+    private String name;
+    private String surname;
     private String email;
-    
-    public String getNombre() {
-        return nombre;
+
+    public String getName() {
+        return name;
     }
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+
+    public void setName(String name) {
+        this.name = name;
     }
-    public String getApellido() {
-        return apellido;
+
+    public String getSurname() {
+        return surname;
     }
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
+
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
+
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
 
-
-    public UserDTO(String nombre, String apellido, String email) {
-        this.nombre = nombre;
-        this.apellido = apellido;
+    public UserDTO(String name, String surname, String email) {
+        this.name = name;
+        this.surname = surname;
         this.email = email;
     }
-    
-    public UserDTO() {
+
+    public UserDTO(String name) {
+        this.name = name;
     }
-
-
 }

@@ -2,14 +2,7 @@ package com.usersproject.users.controllers;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.usersproject.users.DTO.UserDTO;
 import com.usersproject.users.http.request.UserCreateRequestDTO;
@@ -30,7 +23,6 @@ public class UserController {
 
     public UserController(IUserservice userService) {
         this.userService = userService;
-        ;
     }
 
     // CURD
@@ -72,8 +64,8 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
     })
     @GetMapping("/{id}")
-    public UserDTO getUser(@PathVariable Long id) {
-        return userService.getUser(id);
+    public UserDTO getUser(@RequestHeader("Authorization") String token, @PathVariable Long id) {
+        return userService.getUser(token, id);
     }
 
     @Operation(summary = "Listar usuarios", description = "Encuentra los usuarios contenidos en el sistema")

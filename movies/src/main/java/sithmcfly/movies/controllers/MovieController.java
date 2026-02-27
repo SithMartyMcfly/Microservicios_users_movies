@@ -5,8 +5,7 @@ import java.util.List;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,17 +21,6 @@ import sithmcfly.movies.http.response.MovieResponseCreateDTO;
 import sithmcfly.movies.http.response.MovieResponseUpdateDTO;
 import sithmcfly.movies.http.response.VoteResponse;
 import sithmcfly.movies.service.ImpMovieService;
-
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-//import org.springframework.web.bind.annotation.RequestParam;
-
-
 
 
 @Tag(name = "Movies", description = "Operaciones CRUD de Películas y puntuación de películas")
@@ -79,7 +67,7 @@ public class MovieController {
         return ResponseEntity
                 // Devolvemos el estado
                 .status(HttpStatus.CREATED)
-                // Devolvemos lo que hemos creado, podriamos generar un DTO para respuestas
+                // Devolvemos lo que hemos creado, podríamos generar un DTO para respuestas
                 .body(createdMovie);
     }
 
@@ -116,7 +104,7 @@ public class MovieController {
         @ApiResponse(responseCode = "200", description = "Película votada correctamente"),
         @ApiResponse(responseCode = "404", description = "La película no fue encontrada")
     })
-    @PutMapping("/vote/{id}")
+    @PutMapping("/{id}/vote")
     public ResponseEntity<VoteResponse> voteMovie(@PathVariable Long id, @Valid @RequestBody VoteRequest voteRequest) {
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -129,7 +117,7 @@ public class MovieController {
             @ApiResponse(responseCode = "200", description = "Película marcada como vista"),
             @ApiResponse(responseCode = "404", description = "La película no fue encontrada")
     })
-    @PostMapping("/{idMovie}/saw")
+    @PutMapping("/{idMovie}/saw")
     public ResponseEntity<String> userSeeMovie (@PathVariable Long idMovie, Authentication auth){
         String result = impMovieService.userSeeMovie(idMovie, Long.parseLong(auth.getName()));
 
@@ -143,8 +131,10 @@ public class MovieController {
             @ApiResponse(responseCode = "404", description = "La película no fue encontrada")
     })
     @GetMapping("/{idMovie}/users")
-    public ResponseEntity<List<UserDTO>> findUsersById(@PathVariable Long idMovie) {
-        return ResponseEntity.ok(impMovieService.findUsersByMovie(idMovie));
+    public ResponseEntity<List<UserDTO>> findUsersById(
+            @RequestHeader ("Authorization") String token,
+            @PathVariable Long idMovie) {
+        return ResponseEntity.ok(impMovieService.findUsersByMovie(token, idMovie));
     }
     
 }

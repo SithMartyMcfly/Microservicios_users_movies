@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import org.springframework.web.bind.annotation.RequestHeader;
 import sithmcfly.movies.DTO.MovieDTO;
 //import sithmcfly.movies.DTO.UserDTO;
 //import sithmcfly.movies.client.UserClient;
@@ -115,17 +116,17 @@ public class ImpMovieService implements IMovieService{
 
         // Evitamos duplicados en la película
         if  (movie.getUsersSaw().contains(idUser)){
-            return "El usuario " + idUser + "ya ha marcado como vista la película" + movie.getTitle();
+            return "El usuario " + idUser + " ya ha marcado como vista la película" + movie.getTitle();
         }
         // Añadimos el usuario a la List usersSaw y guardamos cambios
         movie.getUsersSaw().add(idUser);
         movieRepository.save(movie);
-        return "El usuario " + idUser + "ha marcado como vista la película " + movie.getTitle();
+        return "El usuario " + idUser + " ha marcado como vista la película " + movie.getTitle();
     }
 
     //Método consulta microservicio Users
     @Override
-    public List<UserDTO> findUsersByMovie(Long idMovie) {
+    public List<UserDTO> findUsersByMovie(String token, Long idMovie) {
         // Consultamos la Movie
         Movie movie = movieRepository
                 .findById(idMovie)
@@ -142,7 +143,7 @@ public class ImpMovieService implements IMovieService{
         // Iteramos cada id dentro de la lista y los recuperamos en la lista UsersDTO
         for (Long userId : usersId) {
             // Usamos el método que tenemos dentro del Feign Client
-            UserDTO user = userClient.getUser(userId);
+            UserDTO user = userClient.getUser(token, userId);
             // Añadimos dentro de la lista cada UserDTO
             users.add(user);
         }

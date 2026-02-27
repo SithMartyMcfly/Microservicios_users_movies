@@ -1,6 +1,6 @@
 package sithmcfly.movies.security;
 
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,28 +14,31 @@ import javax.crypto.spec.SecretKeySpec;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
-        // configuramos el objeto HttpSecurity
-        http
-            // Desabilitamos porque no vamos a trabajar con sesiones
-            .csrf(csrf -> csrf.disable())
-            // Configuración de peticiones que van con autenticación
-            .authorizeHttpRequests(auth -> auth
-                // Rutas permitidas para entrar sin Autenticación
-                .requestMatchers("/api/movies/public/**").permitAll()
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-                // El resto de rutas necesitan Autenticación
-                .anyRequest().authenticated()    
-            )
-            .oauth2ResourceServer(oauth2 -> oauth2
-                // Vamos a usar un token de tipo JWT
-                .jwt(jwt -> jwt
-                    // Le decimos como va a convertir JWT usando
-                    // nuestra clase UserJwtConverter
-                    .jwtAuthenticationConverter(new UserJwtConverter())
+        // 🔥🔥🔥 LOG PARA VER SI LLEGA EL HEADER AUTH 🔥🔥🔥
+        http.addFilterBefore((request, response, chain) -> {
+
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
+            // TENEMOS TOKEN AQUI
+            System.out.println("El TOKEN ES ESTE " + ((HttpServletRequest) request).getHeader("Authorization"));
+
+
+            chain.doFilter(request, response);
+        }, org.springframework.security.web.authentication.AnonymousAuthenticationFilter.class);
+
+        http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/movies/public/**").permitAll()
+                        .anyRequest().authenticated()
                 )
-            );
-        // Devuelve y construye la cadena con los filtros que usará Spring en cada request
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt
+                                .jwtAuthenticationConverter(new UserJwtConverter())
+                        )
+                );
+
         return http.build();
     }
 
@@ -44,5 +47,5 @@ public class SecurityConfig {
         SecretKeySpec secretKey = new SecretKeySpec("perroperroperroperroperroperroperro".getBytes(), "HmacSHA256");
         return NimbusJwtDecoder.withSecretKey(secretKey).build();
     }
- 
 }
+

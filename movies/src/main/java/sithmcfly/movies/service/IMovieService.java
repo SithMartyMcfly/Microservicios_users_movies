@@ -20,5 +20,5 @@ public interface IMovieService {
     String userSeeMovie (long idMovie, long idUser);
     VoteResponse voteMovie (VoteRequest voteRequest, long id);
     //Con este método consultamos los Usuarios que vieron la Movie
-    List<UserDTO> findUsersByMovie (Long idMovie);
+    List<UserDTO> findUsersByMovie (String token, Long idMovie);
 }

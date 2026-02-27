@@ -11,6 +11,6 @@ public interface IUserservice {
     UserDTO createUser (UserCreateRequestDTO request);
     UserDTO updateUser (UserUpdateRequestDTO request, long id);
     void deleteUser (long id);
-    UserDTO getUser (long id);
+    UserDTO getUser (String token, long id);
     List<UserDTO> getAllUsers ();
 }

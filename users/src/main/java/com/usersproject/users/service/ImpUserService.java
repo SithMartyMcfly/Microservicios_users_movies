@@ -104,7 +104,7 @@ public class ImpUserService implements IUserservice {
     }
 
     @Override
-    public UserDTO getUser(long id) {
+    public UserDTO getUser(String token, long id) {
         User user = userRepository.findById(id)
                     .orElseThrow(() -> new UserNotFoundException(String.valueOf(id)));
         return UserMapper.toResponseDTO(user);
