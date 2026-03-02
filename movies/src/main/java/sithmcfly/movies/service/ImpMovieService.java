@@ -104,7 +104,7 @@ public class ImpMovieService implements IMovieService{
     }
 
     @Override
-    public String userSeeMovie(long idMovie, long idUser) {
+    public String userSeeMovie(long idMovie, long idUser, String email) {
         // Recuperamos la película que vamos a ver
         Movie movie = movieRepository.findById(idMovie)
                 .orElseThrow(() -> new MovieNotFoundException(idMovie));
@@ -116,12 +116,12 @@ public class ImpMovieService implements IMovieService{
 
         // Evitamos duplicados en la película
         if  (movie.getUsersSaw().contains(idUser)){
-            return "El usuario " + idUser + " ya ha marcado como vista la película" + movie.getTitle();
+            return "El usuario " + email + " ya ha marcado como vista la película" + movie.getTitle();
         }
         // Añadimos el usuario a la List usersSaw y guardamos cambios
         movie.getUsersSaw().add(idUser);
         movieRepository.save(movie);
-        return "El usuario " + idUser + " ha marcado como vista la película " + movie.getTitle();
+        return "El usuario " + email + " ha marcado como vista la película " + movie.getTitle();
     }
 
     //Método consulta microservicio Users

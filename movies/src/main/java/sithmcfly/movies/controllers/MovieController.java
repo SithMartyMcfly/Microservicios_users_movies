@@ -2,9 +2,11 @@ package sithmcfly.movies.controllers;
 
 import java.util.List;
 
+
 import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -119,7 +121,10 @@ public class MovieController {
     })
     @PutMapping("/{idMovie}/saw")
     public ResponseEntity<String> userSeeMovie (@PathVariable Long idMovie, Authentication auth){
-        String result = impMovieService.userSeeMovie(idMovie, Long.parseLong(auth.getName()));
+        Jwt jwt = (Jwt) auth.getPrincipal();
+        Long userId = Long.parseLong(jwt.getId());
+        String email = jwt.getSubject();
+        String result = impMovieService.userSeeMovie(idMovie, userId, email);
 
         return ResponseEntity.ok(result);
     }

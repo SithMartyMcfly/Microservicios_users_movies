@@ -33,11 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/movies/public/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(new UserJwtConverter())
-                        )
-                );
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {}));
 
         return http.build();
     }
