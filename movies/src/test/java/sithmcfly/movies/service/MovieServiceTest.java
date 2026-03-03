@@ -277,6 +277,7 @@ class MoviesServiceTests {
         Movie movie = new Movie();
         movie.setId(1L);
         movie.setTitle("MovieToVote");
+        movie.getUsersSaw().add(1L);    //Añadimos usuario que ha visto la película y va a votar
         movie.setVotes(1);      //Valor anterior al voto
         movie.setRating(8.0);   //Valor anterior al voto
 
@@ -294,8 +295,8 @@ class MoviesServiceTests {
         int expectedVotes = 2;
         double expectedRating = 9.0;
 
-        // Act ejecutamos el metodo real
-        VoteResponse result = movieService.voteMovie(voteRequest, 1L);
+        // Act ejecutamos el método real
+        VoteResponse result = movieService.voteMovie(voteRequest, 1L, 1L);
 
         // Assert comprobamos valores
         assertEquals(expectedVotes, result.getVote());
@@ -309,7 +310,7 @@ class MoviesServiceTests {
     void voteMovie_throwsMovieNotFoundException_whenMovieNotExists(){
         when(movieRepository.findById(68L)).thenReturn(Optional.empty());
 
-        assertThrows(MovieNotFoundException.class, ()->movieService.voteMovie(new VoteRequest(), 68L));
+        assertThrows(MovieNotFoundException.class, ()->movieService.voteMovie(new VoteRequest(), 68L, 1L));
 
         verify(movieRepository, times(1)).findById(68L);
         verify(movieRepository, never()).save(any());

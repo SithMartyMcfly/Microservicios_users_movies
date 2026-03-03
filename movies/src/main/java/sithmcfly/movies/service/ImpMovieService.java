@@ -5,17 +5,15 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import org.springframework.web.bind.annotation.RequestHeader;
 import sithmcfly.movies.DTO.MovieDTO;
-//import sithmcfly.movies.DTO.UserDTO;
-//import sithmcfly.movies.client.UserClient;
 import sithmcfly.movies.DTO.UserDTO;
 import sithmcfly.movies.client.UserClient;
 import sithmcfly.movies.entities.Movie;
 import sithmcfly.movies.exception.MovieNotFoundException;
+import sithmcfly.movies.exception.UserVotedMovieException;
+import sithmcfly.movies.exception.UserNotSawMovieException;
 import sithmcfly.movies.http.request.MovieRequestDTO;
 import sithmcfly.movies.http.request.VoteRequest;
-//import sithmcfly.movies.http.response.UsersByMovieResponse;
 import sithmcfly.movies.http.response.MovieResponseCreateDTO;
 import sithmcfly.movies.http.response.MovieResponseUpdateDTO;
 import sithmcfly.movies.http.response.VoteResponse;
@@ -86,10 +84,26 @@ public class ImpMovieService implements IMovieService{
 
     // FUERA DEL CRUD
     @Override
-    public VoteResponse voteMovie(VoteRequest voteRequest, long id) {
+    public VoteResponse voteMovie(VoteRequest voteRequest, long idMovie, long idUser) {
         // Encontrar la película
-        Movie movie = movieRepository.findById(id)
-        .orElseThrow(() -> new MovieNotFoundException(id));
+        Movie movie = movieRepository.findById(idMovie)
+        .orElseThrow(() -> new MovieNotFoundException(idMovie));
+        if (movie.getUsersVoted() == null) {
+            movie.setUsersVoted(new ArrayList<>());
+        }
+        if (movie.getUsersSaw() == null) {
+            movie.setUsersSaw(new ArrayList<>());
+        }
+        // Comprobar que el usuario ha visto la película
+        if(!movie.getUsersSaw().contains(idUser)){
+            throw new UserNotSawMovieException(idUser);
+        }
+        // Comprobar que el usuario no ha votado la película
+        if (movie.getUsersVoted().contains(idUser)){
+            throw new UserVotedMovieException(idUser);
+        }
+        // Añadir usuario a la lista de votos
+        movie.getUsersVoted().add(idUser);
         // Actualizar puntuación
         int movieVotesPrevious = movie.getVotes();
         int movieVotes = movie.getVotes()+1;
@@ -131,10 +145,9 @@ public class ImpMovieService implements IMovieService{
         Movie movie = movieRepository
                 .findById(idMovie)
                 .orElseThrow(() -> new MovieNotFoundException(idMovie));
-        // Controlamos que la List esté vacía, por lo tanto, sea nula
-        // en caso de estar vacía inicializamos una List
-        if (movie.getUsersSaw() == null || movie.getUsersSaw().isEmpty()){
-                return new ArrayList<>();
+        // Iniciamos la lista en caso de ser nula
+        if (movie.getUsersSaw() == null){
+            movie.setUsersSaw(new ArrayList<>());
         }
         // Obtenemos los usuarios que tenemos guardado en la lista
         List<Long> usersId = movie.getUsersSaw();

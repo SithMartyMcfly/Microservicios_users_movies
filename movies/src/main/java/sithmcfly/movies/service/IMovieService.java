@@ -18,7 +18,7 @@ public interface IMovieService {
     MovieResponseUpdateDTO editMovie(MovieRequestDTO movieUpdate, long id);
     void deleteMovie (long id);
     String userSeeMovie (long idMovie, long idUser, String email);
-    VoteResponse voteMovie (VoteRequest voteRequest, long id);
+    VoteResponse voteMovie (VoteRequest voteRequest, long idMovie, long idUser);
     //Con este método consultamos los Usuarios que vieron la Movie
     List<UserDTO> findUsersByMovie (String token, Long idMovie);
 }

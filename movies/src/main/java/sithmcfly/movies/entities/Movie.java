@@ -1,15 +1,11 @@
 package sithmcfly.movies.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Entity // Anotacion que dice que es una entidad de la BBDD
+@Entity // Anotación que dice que es una entidad de la BBDD
 @Table(name = "movies") // Anotación para indicar que mapea la tabla 'movies'
 public class Movie {
     @Id // indica que es una PK
@@ -24,11 +20,16 @@ public class Movie {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    /*Para no tener problemas de listas nulas
+    * dejamos todas las listas inicializadas*/
     // Guardamos todos los usuarios que han
     // visto en una lista por Id de usuario
-
     private List<Long> usersSaw;
-    
+    // Guardamos todos los usuarios que han
+    // votado una película por el ID
+    private List<Long> usersVoted;
+
     // en caso de que los nombres de las propiedades coincidan con los
     // nombres de los campos de la BBDD no hay que hacer nada
     // en caso contrario hay que anotarlo como en el campo imageUrl
@@ -99,19 +100,21 @@ public class Movie {
         this.imageUrl = imageUrl;
     }
 
-    public List<Long> getUsersSaw() {
-        return usersSaw;
-    }
+    public List<Long> getUsersSaw() { return usersSaw; }
 
-    public void setUsersSaw(List<Long> usersSaw) {
-        this.usersSaw = usersSaw;
-    }
+    public void setUsersSaw(List<Long> usersSaw) { this.usersSaw = usersSaw; }
+
+    public void setUsersVoted(List<Long> usersVoted){this.usersVoted = usersVoted;}
+
+    public List<Long> getUsersVoted(){ return usersVoted; }
 
     // CONSTRUCTORS
     public Movie() {
+        this.usersSaw = new ArrayList<>();
+        this.usersVoted = new ArrayList<>();
     }
 
-    public Movie(Long id, String title, String director, String description, int year, int votes, double rating, String imageUrl, List<Long> usersSaw) {
+    public Movie(Long id, String title, String director, String description, int year, int votes, double rating, String imageUrl, List<Long> usersSaw, List<Long> usersVoted) {
         this.id = id;
         this.title = title;
         this.director = director;
@@ -121,5 +124,6 @@ public class Movie {
         this.rating = rating;
         this.imageUrl = imageUrl;
         this.usersSaw = usersSaw;
+        this.usersVoted = usersVoted;
     }
 }

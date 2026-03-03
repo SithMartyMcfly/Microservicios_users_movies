@@ -107,10 +107,16 @@ public class MovieController {
         @ApiResponse(responseCode = "404", description = "La película no fue encontrada")
     })
     @PutMapping("/{id}/vote")
-    public ResponseEntity<VoteResponse> voteMovie(@PathVariable Long id, @Valid @RequestBody VoteRequest voteRequest) {
+    public ResponseEntity<VoteResponse> voteMovie(
+            @PathVariable Long id,
+            @Valid @RequestBody VoteRequest voteRequest,
+            Authentication auth
+    ) {
+        Jwt jwt = (Jwt) auth.getPrincipal();
+        Long userId = Long.parseLong(jwt.getId());
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(impMovieService.voteMovie(voteRequest, id));
+                .body(impMovieService.voteMovie(voteRequest, id, userId));
     }
 
     @Operation( summary = "Película vista",
