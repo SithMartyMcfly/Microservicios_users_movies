@@ -1,13 +1,7 @@
 package com.usersproject.users.entity;
 
 
-import jakarta.persistence.Column;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "user")
@@ -33,6 +27,10 @@ public class User {
     @Column(name = "password")
     private String password;
 
+
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
+
     public Long getId() {
         return id;
     }
@@ -48,12 +46,8 @@ public class User {
     public String getApellido() {
         return apellido;
     }
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
-    public String getEmail() {
-        return email;
-    }
+    public void setApellido(String apellido) { this.apellido = apellido; }
+    public String getEmail() { return email; }
     public void setEmail(String email) {
         this.email = email;
     }
@@ -69,18 +63,28 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-   
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
 
-    public User(Long id, String nombre, String apellido, String email, String telefono, String password) {
+
+    public User(Long id, String nombre, String apellido, String email, String telefono, String password, Role role) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
         this.telefono = telefono;
         this.password = password;
+        this.role = role;
     }
-    
+
     public User() {
+    }
+
+    // Clase Enum para roles
+    public enum Role {
+        ADMIN,
+        USER,
+        GUEST
     }
     
 }
