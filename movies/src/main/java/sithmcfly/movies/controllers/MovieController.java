@@ -38,7 +38,7 @@ public class MovieController {
     }
 
     @Operation(summary = "Listar Películas", description = "Encuentra un listado de todas las películas en el sistema")
-    @ApiResponse(responseCode = "200", description = "Listado de usuarios encontrado")
+    @ApiResponse(responseCode = "200", description = "Listado de películas encontradas")
     @GetMapping //Atiende todas las peticiones que vayan por GET  
     public ResponseEntity<List<MovieDTO>> getAllMovies() {
         return ResponseEntity.ok(impMovieService.getAllMovies());
@@ -79,12 +79,10 @@ public class MovieController {
         @ApiResponse(responseCode = "404", description = "Id película no existe")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Movie> deleteMovie (@PathVariable Long id) {
+    public ResponseEntity<Void> deleteMovie (@PathVariable Long id) {
         impMovieService.deleteMovie(id);
         // Un método de borrado no debe devolver nada de ahi que usemos el status NO CONTENT
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .build();
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Actualizar película", description = "Permite actualizar una película pasándole un MovieRequestDTO")
