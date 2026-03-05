@@ -42,7 +42,7 @@ public class AuthService {
         char[] passwordChars = request.getPassword().toCharArray();
         Argon2 argon2 = Argon2Factory.create(Argon2Types.ARGON2id);
         if(argon2.verify(passwordHashed, passwordChars)){
-            return jwtUtil.create(String.valueOf(user.getId()), user.getEmail());
+            return jwtUtil.create(String.valueOf(user.getId()), user.getEmail(), user.getRole());
         } else {
             throw new UnauthorizedException();
         }

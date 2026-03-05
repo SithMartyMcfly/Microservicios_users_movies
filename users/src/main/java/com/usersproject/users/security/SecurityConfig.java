@@ -5,6 +5,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -21,12 +22,15 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             // Configuración de peticiones que van con autenticación
             .authorizeHttpRequests(auth -> auth
-                // Rutas permitidas para entrar sin Autenticación
-                .requestMatchers("/api/login").permitAll()
-                .requestMatchers("/api/users").permitAll()
-                .requestMatchers("/swagger-ui/**").permitAll()
-                .requestMatchers("/v3/api-docs/**").permitAll()              
-
+                    // Rutas permitidas para entrar sin Autenticación
+                    .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+                    // Rutas permitidas para ADMIN
+                    .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/api/users/list").hasRole("ADMIN")
+                    // Rutas permitidas para usuarios registrados (con @Preauthorized en controlador)
+                    .requestMatchers(HttpMethod.GET, "/api/users/**").authenticated()
+                    .requestMatchers(HttpMethod.PUT, "/api/users/**").authenticated()
                 // El resto de rutas necesitan Autenticación
                 .anyRequest().authenticated()    
             )

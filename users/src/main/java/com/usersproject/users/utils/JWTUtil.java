@@ -1,5 +1,6 @@
 package com.usersproject.users.utils;
 
+import com.usersproject.users.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 @ConfigurationProperties(prefix = "custom.security.jwt")
@@ -22,14 +24,16 @@ public class JWTUtil {
         return Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String create(String id, String subject) {
+    public String create(String id, String email, User.Role role) {
 
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
 
         JwtBuilder builder = Jwts.builder()
-                .setId(id)
-                .setSubject(subject)
+                .setId(UUID.randomUUID().toString())
+                .setSubject(id)
+                .claim("email", email)
+                .claim("role", role.name())
                 .setIssuer(issuer)
                 .setIssuedAt(now)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256);
