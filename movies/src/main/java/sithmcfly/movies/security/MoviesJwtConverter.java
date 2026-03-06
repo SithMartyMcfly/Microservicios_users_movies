@@ -20,9 +20,9 @@ public class MoviesJwtConverter implements Converter<Jwt, JwtAuthenticationToken
 
 
         return new JwtAuthenticationToken(
-                jwt, //<-------------Token
-                authorities, //<-----Rol
-                jwt.getSubject() //<-ID USUARIO
+                jwt, //<--------------Token
+                authorities, //<------Rol
+                jwt.getSubject() //<--ID USUARIO
         );
     }
 }
