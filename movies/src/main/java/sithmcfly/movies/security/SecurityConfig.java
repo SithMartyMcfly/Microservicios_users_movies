@@ -3,6 +3,7 @@ package sithmcfly.movies.security;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -16,24 +17,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        // 🔥🔥🔥 LOG PARA VER SI LLEGA EL HEADER AUTH 🔥🔥🔥
         http.addFilterBefore((request, response, chain) -> {
 
             HttpServletRequest httpRequest = (HttpServletRequest) request;
-            // TENEMOS TOKEN AQUI
-            System.out.println("El TOKEN ES ESTE " + ((HttpServletRequest) request).getHeader("Authorization"));
-
-
             chain.doFilter(request, response);
         }, org.springframework.security.web.authentication.AnonymousAuthenticationFilter.class);
 
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/movies/public/**").permitAll()
+                        // Endpoints solo accesibles a ADMIN
+                        .requestMatchers(HttpMethod.DELETE, "/api/movies/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/movies/**").hasRole("ADMIN")
+                        // Resto enpoints son con autenticación
+                        .requestMatchers("/api/movies/**").authenticated()
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {}));
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(new MoviesJwtConverter())));
 
         return http.build();
     }

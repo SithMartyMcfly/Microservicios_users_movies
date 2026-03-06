@@ -3,6 +3,7 @@ package sithmcfly.movies.controllers;
 import java.util.List;
 
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,33 +38,34 @@ public class MovieController {
         this.impMovieService = impMovieService;
     }
 
+    @GetMapping
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Listar Películas", description = "Encuentra un listado de todas las películas en el sistema")
     @ApiResponse(responseCode = "200", description = "Listado de películas encontradas")
-    @GetMapping //Atiende todas las peticiones que vayan por GET  
     public ResponseEntity<List<MovieDTO>> getAllMovies() {
         return ResponseEntity.ok(impMovieService.getAllMovies());
     }
 
   
+    @GetMapping("/details/{id}")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Encuentra una película", description = "Encuentra una película pasando su ID")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description ="Película encontrada correctamente"),
         @ApiResponse(responseCode = "404", description = "La película no fue encontrada")
     })
-    @GetMapping("/details/{id}") /*Hay que diferenciar los GET, y esta le damos un path diferente
-                        tenemos que anotarlo en los parámetros del método que le diremos que
-                        por la URI vendrá el parametro del método*/
     public ResponseEntity<MovieDTO> getMovie (@PathVariable Long id) {
 
         return ResponseEntity.ok(impMovieService.getMovie(id));
     }
 
+    @PostMapping
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Crea una película", description = "Crea un nuevo usuario con validaciones propias de MovieRequestDTO")
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Película creada correctamente"),
         @ApiResponse(responseCode = "400", description = "Datos incorrectos o incompletos")
     })
-    @PostMapping
     public ResponseEntity<MovieResponseCreateDTO> createMovie (@Valid @RequestBody MovieRequestDTO movie) {
         MovieResponseCreateDTO createdMovie = impMovieService.createMovie(movie);
         return ResponseEntity
@@ -73,24 +75,26 @@ public class MovieController {
                 .body(createdMovie);
     }
 
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Borrar una película", description = "Borra una película a partir de una Id")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Película borrada correctamente"),
         @ApiResponse(responseCode = "404", description = "Id película no existe")
     })
-    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMovie (@PathVariable Long id) {
         impMovieService.deleteMovie(id);
         // Un método de borrado no debe devolver nada de ahi que usemos el status NO CONTENT
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Actualizar película", description = "Permite actualizar una película pasándole un MovieRequestDTO")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Película actualizada correctamente"),
         @ApiResponse(responseCode = "404", description = "Película no encontrada")
     })
-    @PutMapping("/{id}")
     public ResponseEntity<MovieResponseUpdateDTO> editMovie (@PathVariable Long id, @Valid @RequestBody MovieRequestDTO updatedMovie){
         
         return ResponseEntity.status(HttpStatus.OK)
@@ -98,48 +102,53 @@ public class MovieController {
     }
 
 
-    @Operation( summary = "Vota película", 
+    @PutMapping("/{id}/vote")
+    @PreAuthorize("isAuthenticated()")
+    @Operation( summary = "Vota película",
                 description = "Vota una película y hace un cálculo de su media con la nueva nota, devuelve el número de votos y la media de notas")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Película votada correctamente"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autentificado"),
         @ApiResponse(responseCode = "404", description = "La película no fue encontrada")
     })
-    @PutMapping("/{id}/vote")
     public ResponseEntity<VoteResponse> voteMovie(
             @PathVariable Long id,
             @Valid @RequestBody VoteRequest voteRequest,
             Authentication auth
     ) {
         Jwt jwt = (Jwt) auth.getPrincipal();
-        Long userId = Long.parseLong(jwt.getId());
+        Long userId = Long.parseLong(jwt.getSubject());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(impMovieService.voteMovie(voteRequest, id, userId));
     }
 
+    @PutMapping("/{idMovie}/saw")
+    @PreAuthorize("isAuthenticated()")
     @Operation( summary = "Película vista",
             description = "Marca una película vista por un usuario")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Película marcada como vista"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autentificado"),
             @ApiResponse(responseCode = "404", description = "La película no fue encontrada")
     })
-    @PutMapping("/{idMovie}/saw")
     public ResponseEntity<String> userSeeMovie (@PathVariable Long idMovie, Authentication auth){
         Jwt jwt = (Jwt) auth.getPrincipal();
-        Long userId = Long.parseLong(jwt.getId());
-        String email = jwt.getSubject();
+        Long userId = Long.parseLong(jwt.getSubject());
+        String email = jwt.getClaimAsString("email");
         String result = impMovieService.userSeeMovie(idMovie, userId, email);
 
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/{idMovie}/users")
+    @PreAuthorize("isAuthenticated()")
     @Operation( summary = "Usuarios que han visto una película",
             description = "Vota una película y hace un cálculo de su media con la nueva nota, devuelve el número de votos y la media de notas")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Película marcada como vista"),
             @ApiResponse(responseCode = "404", description = "La película no fue encontrada")
     })
-    @GetMapping("/{idMovie}/users")
     public ResponseEntity<List<UserDTO>> findUsersById(
             @RequestHeader ("Authorization") String token,
             @PathVariable Long idMovie) {
