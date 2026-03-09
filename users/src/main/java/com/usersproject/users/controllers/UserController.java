@@ -52,7 +52,7 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @PostMapping
+    @PostMapping("/create")
     @Operation(summary = "Crear un usuario", description = "Crea un nuevo usuario usando un UserCreateRequestDTO")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Usuario creado correctamente"),

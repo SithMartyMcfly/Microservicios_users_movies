@@ -27,8 +27,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints solo accesibles a ADMIN
-                        .requestMatchers(HttpMethod.DELETE, "/api/movies/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/movies/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/movies/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/movies/{id}").hasRole("ADMIN")
                         // Resto enpoints son con autenticación
                         .requestMatchers("/api/movies/**").authenticated()
                         .anyRequest().authenticated()

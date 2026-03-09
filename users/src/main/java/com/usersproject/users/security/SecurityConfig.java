@@ -24,13 +24,13 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                     // Rutas permitidas para entrar sin Autenticación
                     .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/users/create").permitAll()
                     // Rutas permitidas para ADMIN
-                    .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/users/{id}").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/api/users/list").hasRole("ADMIN")
                     // Rutas permitidas para usuarios registrados (con @Preauthorized en controlador)
-                    .requestMatchers(HttpMethod.GET, "/api/users/**").authenticated()
-                    .requestMatchers(HttpMethod.PUT, "/api/users/**").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/api/users/{id}").authenticated()
+                    .requestMatchers(HttpMethod.PUT, "/api/users/{id}").authenticated()
                 // El resto de rutas necesitan Autenticación
                 .anyRequest().authenticated()    
             )
