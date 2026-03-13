@@ -8,11 +8,13 @@
         <outputRelativeToContentRoot value="true" />
         <module name="movies" />
         <module name="users" />
+        <module name="comments" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="comments" options="-parameters" />
       <module name="movies" options="-parameters" />
       <module name="users" options="-parameters" />
     </option>
