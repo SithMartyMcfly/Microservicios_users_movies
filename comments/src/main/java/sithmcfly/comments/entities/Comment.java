@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
-public class Comments {
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -69,7 +69,7 @@ public class Comments {
     //CONSTRUCTORES
 
 
-    public Comments(long id, String text, LocalDateTime createdAt, LocalDateTime updatedAt, long idUser, long idMovie) {
+    public Comment(long id, String text, LocalDateTime createdAt, LocalDateTime updatedAt, long idUser, long idMovie) {
         this.id = id;
         this.text = text;
         this.createdAt = createdAt;
@@ -78,7 +78,7 @@ public class Comments {
         this.idMovie = idMovie;
     }
 
-    public Comments() {
+    public Comment() {
     }
 
     @PrePersist
