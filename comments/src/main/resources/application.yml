@@ -1,5 +1,5 @@
 server:
-  port:8093
+  port: 8093
 spring:
   config:
     import: optional:file:.env.properties
