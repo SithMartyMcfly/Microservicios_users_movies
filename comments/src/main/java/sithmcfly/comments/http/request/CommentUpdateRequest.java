@@ -3,6 +3,7 @@ package sithmcfly.comments.http.request;
 public class CommentUpdateRequest {
     private String text;
     private long idComment;
+    private long idUser;
 
     public String getText() {
         return text;
@@ -20,9 +21,18 @@ public class CommentUpdateRequest {
         this.idComment = idComment;
     }
 
-    public CommentUpdateRequest(String text, long idComment) {
+    public long getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(long idUser) {
+        this.idUser = idUser;
+    }
+
+    public CommentUpdateRequest(String text, long idComment, long idUser) {
         this.text = text;
         this.idComment = idComment;
+        this.idUser = idUser;
     }
 
     public CommentUpdateRequest() {

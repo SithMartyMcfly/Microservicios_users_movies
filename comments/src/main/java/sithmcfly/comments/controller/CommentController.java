@@ -2,6 +2,7 @@ package sithmcfly.comments.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import sithmcfly.comments.DTO.CommentDTO;
 import sithmcfly.comments.http.request.CommentCreateRequest;
@@ -34,6 +35,7 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getComment(id));
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<CommentCreatedResponse> createComment (@RequestBody CommentCreateRequest comment){
         CommentCreatedResponse createdComment = commentService.createComment(comment);
@@ -41,12 +43,14 @@ public class CommentController {
                 .body(createdComment);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteComment (@PathVariable long id){
         commentService.deleteComment(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PutMapping ("/{id}")
     public ResponseEntity<CommentUpdatedResponse> updateComment (@RequestBody CommentUpdateRequest comment, @PathVariable long id){
         CommentUpdatedResponse updatedComment = commentService.editComment(id, comment);
