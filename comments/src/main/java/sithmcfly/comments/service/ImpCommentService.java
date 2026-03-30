@@ -1,5 +1,6 @@
 package sithmcfly.comments.service;
 
+import feign.FeignException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -8,6 +9,8 @@ import sithmcfly.comments.DTO.CommentDTO;
 import sithmcfly.comments.DTO.MovieDTO;
 import sithmcfly.comments.client.movieClient;
 import sithmcfly.comments.entities.Comment;
+import sithmcfly.comments.exception.CommentNotForbiddenException;
+import sithmcfly.comments.exception.CommentNotFoundException;
 import sithmcfly.comments.http.request.CommentCreateRequest;
 import sithmcfly.comments.http.request.CommentUpdateRequest;
 import sithmcfly.comments.http.response.CommentCreatedResponse;
@@ -42,13 +45,21 @@ public class ImpCommentService implements ICommentService {
     @Override
     public CommentDTO getComment(long idComment){
         Comment comment = commentRepository.findById(idComment)
-                .orElseThrow(() -> new RuntimeException("No se encontró"));
+                .orElseThrow(() -> new CommentNotFoundException(idComment));
         return CommentMapper.toCommentDTO(comment);
     }
 
     @Override
-    public CommentCreatedResponse createComment(CommentCreateRequest comment) {
-        MovieDTO movieExists = movieClient.getMovie(comment.getIdMovie());
+    public CommentCreatedResponse createComment(String token, CommentCreateRequest comment) {
+        MovieDTO movieExists = movieClient.getMovie(token, comment.getIdMovie());
+
+        // Debo obtener el usuario que está autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String userJwt = jwt.getSubject();
+        long userIdJwt = Long.parseLong(userJwt);
+        comment.setIdUser(userIdJwt);
+        // Una vez añadido el userId mapeamos el comment
         Comment createComment = CommentMapper.toEntity(comment);
 
         commentRepository.save(createComment);
@@ -58,7 +69,7 @@ public class ImpCommentService implements ICommentService {
     @Override
     public void deleteComment(long id) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("no se encuentra"));
+                .orElseThrow(() -> new CommentNotFoundException(id));
         // Obtenemos el token
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Jwt jwt = (Jwt) authentication.getPrincipal();
@@ -73,7 +84,7 @@ public class ImpCommentService implements ICommentService {
         // Comprobamos si es el propietario del comentario
         boolean isOwner = comment.getIdUser() == idUser;
         if(!isOwner && !isAdmin){
-            throw new RuntimeException("Fallo Forbidden");
+            throw new CommentNotForbiddenException(id);
         }
 
         commentRepository.delete(comment);
@@ -97,12 +108,29 @@ public class ImpCommentService implements ICommentService {
         // Comprobamos si es el propietario del comentario
         boolean isOwner = updateComment.getIdUser() == idUser;
         if(!isOwner && !isAdmin){
-            throw new RuntimeException("Fallo Forbidden");
+            throw new CommentNotForbiddenException(idComment);
         }
+
         updateComment.setText(comment.getText());
 
         Comment saved = commentRepository.save(updateComment);
 
         return CommentMapper.toUpdateResponse(saved);
+    }
+
+    @Override
+    public List<CommentDTO> getCommentsByMovie (String token, long idMovie){
+
+        try{
+            MovieDTO movie = movieClient.getMovie(token, idMovie);
+        } catch (FeignException.FeignClientException ex){
+            throw new RuntimeException("La película no existe");
+        }
+
+        List<Comment> comment = commentRepository.findByIdMovieOrderByCreatedAtDesc(idMovie);
+
+        return comment.stream()
+                .map(CommentMapper::toCommentDTO)
+                .collect(Collectors.toList());
     }
 }

@@ -47,7 +47,7 @@ public class MovieController {
     }
 
   
-    @GetMapping("/details/{id}")
+    @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Encuentra una película", description = "Encuentra una película pasando su ID")
     @ApiResponses({

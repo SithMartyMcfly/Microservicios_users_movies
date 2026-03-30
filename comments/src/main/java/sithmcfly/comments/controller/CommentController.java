@@ -37,8 +37,10 @@ public class CommentController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public ResponseEntity<CommentCreatedResponse> createComment (@RequestBody CommentCreateRequest comment){
-        CommentCreatedResponse createdComment = commentService.createComment(comment);
+    public ResponseEntity<CommentCreatedResponse> createComment (
+            @RequestHeader("Authorization") String token,
+            @RequestBody CommentCreateRequest comment){
+        CommentCreatedResponse createdComment = commentService.createComment(token, comment);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(createdComment);
     }
@@ -56,5 +58,14 @@ public class CommentController {
         CommentUpdatedResponse updatedComment = commentService.editComment(id, comment);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(updatedComment);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/commentsByMovie/{idMovie}")
+    public ResponseEntity<List<CommentDTO>> getCommentsByMovie (
+            @RequestHeader("Authorization") String token,
+            @PathVariable long idMovie){
+        return ResponseEntity
+                .ok(commentService.getCommentsByMovie(token, idMovie));
     }
 }

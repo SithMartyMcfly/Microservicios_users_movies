@@ -9,5 +9,7 @@ import sithmcfly.comments.DTO.MovieDTO;
 @FeignClient(name="microservice-movie", url="http://localhost:8092")
 public interface movieClient {
     @GetMapping("/api/movies/{id}")
-    MovieDTO getMovie(@PathVariable long id);
+    MovieDTO getMovie(
+            @RequestHeader("Authorization") String token,
+            @PathVariable long id);
 }
