@@ -1,3 +1,48 @@
+server:
+  port: 8080
+
 spring:
   application:
-    name: apigateway
+    name: api-gateway
+
+  config:
+    import: optional:file:./.env.properties
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+      routes:
+        - id: users-route
+          uri: lb://microservice-users
+          predicates:
+            - Path=/api/users/**
+
+        - id: login-route
+          uri: lb://microservice-users
+          predicates:
+            - Path=/api/login
+
+        - id: movies-route
+          uri: lb://movies
+          predicates:
+            - Path=/api/movies/**
+
+        - id: comments-route
+          uri: lb://comments
+          predicates:
+            - Path=/api/comments/**
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret: ${JWT_KEY}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

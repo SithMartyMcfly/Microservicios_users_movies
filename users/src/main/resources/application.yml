@@ -16,10 +16,16 @@ spring:
      hibernate:
        format_sql: true
 
+
 custom:
  security:
   jwt:
    key: ${JWT_KEY}
    issuer: ${JWT_ISSUER}
    ttlMillis: ${JWT_TT_MILLIS}
+
+eureka:
+  instance:
+    hostname: localhost
+
 

@@ -7,13 +7,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="movies" />
+        <module name="apigateway" />
         <module name="comments" />
         <module name="users" />
         <module name="eureka" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="apigateway" target="21" />
       <module name="apigateway (1)" target="21" />
     </bytecodeTargetLevel>
   </component>
